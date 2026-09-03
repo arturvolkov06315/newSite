@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Расписание 310Р15</title>
+    <title>Расписание — OCR загрузка</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+    </script>
     <style>
         * {
             margin: 0;
@@ -126,57 +128,55 @@
             border-color: #ffc0d0;
         }
 
-        .file-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            margin-top: 0.6rem;
-            max-height: 200px;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+        .preview-container {
+            margin-top: 0.8rem;
+            display: none;
         }
 
-        .file-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #fff3f7;
-            padding: 0.4rem 0.8rem;
+        .preview-container.active {
+            display: block;
+        }
+
+        .preview-container img {
+            max-width: 100%;
+            max-height: 300px;
             border-radius: 16px;
-            border: 1px solid #ffdce8;
-            font-size: 0.75rem;
-            color: #3e2a30;
-            gap: 0.5rem;
+            border: 2px solid #ffdce8;
+            display: block;
+            margin: 0 auto;
         }
 
-        .file-item .name {
-            flex: 1;
+        .progress-container {
+            margin-top: 0.8rem;
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ffdce8;
+            border-radius: 20px;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-weight: 500;
+            border: 1px solid #ffbdd2;
         }
 
-        .file-item .size {
-            font-size: 0.6rem;
+        .progress-bar .fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #fbc4d0, #ffb0c8);
+            border-radius: 20px;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.8rem;
             color: #95486b;
-            opacity: 0.7;
-            white-space: nowrap;
-        }
-
-        .file-item .remove-btn {
-            background: none;
-            border: none;
-            color: #95486b;
-            font-size: 1rem;
-            cursor: pointer;
-            padding: 0 0.2rem;
-            opacity: 0.5;
-            transition: opacity 0.2s;
-        }
-
-        .file-item .remove-btn:active {
-            opacity: 1;
+            margin-top: 0.3rem;
         }
 
         .actions-row {
@@ -250,6 +250,7 @@
             box-shadow: 0 6px 24px rgba(235, 120, 160, 0.12);
             border: 1px solid rgba(255, 220, 235, 0.5);
             display: block;
+            margin-top: 1.2rem;
         }
 
         .schedule-header {
@@ -414,79 +415,59 @@
             min-width: 1.8rem;
         }
 
-        .image-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.6rem;
-            margin-top: 0.5rem;
-        }
-
-        .image-grid .image-wrapper {
-            position: relative;
+        .recognized-text {
+            background: #fff3f7;
+            border: 1px solid #ffdce8;
             border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid #ffdce8;
-            background: #fff3f7;
-            aspect-ratio: 4/3;
+            padding: 0.8rem;
+            margin-top: 0.8rem;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.7rem;
+            color: #3e2a30;
+            white-space: pre-wrap;
+            display: none;
         }
 
-        .image-grid .image-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .recognized-text.active {
             display: block;
-            background: #fff3f7;
         }
 
-        .image-grid .image-wrapper .remove-img {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #ffbdd2;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 0.8rem;
-            color: #95486b;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            -webkit-tap-highlight-color: transparent;
+        .recognized-text .label {
+            font-weight: 600;
+            color: #712f4b;
+            margin-bottom: 0.3rem;
+            font-size: 0.75rem;
         }
 
-        .image-grid .image-wrapper .remove-img:active {
-            transform: scale(0.9);
-            background: #ffd9e6;
-        }
-
-        .image-grid .image-wrapper .page-number {
-            position: absolute;
-            bottom: 4px;
-            left: 4px;
-            background: rgba(255, 255, 255, 0.85);
-            padding: 0.05rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.55rem;
-            color: #582f41;
-            border: 1px solid #ffbdd2;
-        }
-
-        .no-images {
+        .status-message {
             text-align: center;
-            padding: 1rem 0.5rem;
-            color: #95486b;
+            padding: 0.5rem;
+            border-radius: 16px;
             font-size: 0.8rem;
-            grid-column: 1/-1;
+            margin-top: 0.5rem;
+            display: none;
         }
 
-        .no-images .icon {
-            font-size: 2rem;
-            opacity: 0.3;
+        .status-message.success {
             display: block;
-            margin-bottom: 0.2rem;
+            background: #d4e8d4;
+            color: #3a6a3a;
+            border: 1px solid #b8d4b8;
+        }
+
+        .status-message.error {
+            display: block;
+            background: #ffd9e6;
+            color: #712f4b;
+            border: 1px solid #ffbdd2;
+        }
+
+        .status-message.info {
+            display: block;
+            background: #ffd9e6;
+            color: #95486b;
+            border: 1px solid #ffbdd2;
         }
 
         .footer-actions {
@@ -501,26 +482,8 @@
             min-width: 80px;
         }
 
-        .scroll-container {
-            max-height: 60vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .image-wrapper {
-            animation: fadeIn 0.2s ease;
-        }
-
         @media (min-width: 600px) {
             .upload-buttons {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-            .image-grid {
                 grid-template-columns: 1fr 1fr 1fr;
             }
             .upload-header h2 {
@@ -560,19 +523,6 @@
                 padding: 0.5rem 0.6rem;
                 min-height: 38px;
                 border-radius: 30px;
-            }
-            .image-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 0.4rem;
-            }
-            .image-grid .image-wrapper {
-                border-radius: 12px;
-                aspect-ratio: 3/4;
-            }
-            .image-grid .image-wrapper .remove-img {
-                width: 24px;
-                height: 24px;
-                font-size: 0.7rem;
             }
             .schedule-header h1 {
                 font-size: 1.1rem;
@@ -633,9 +583,6 @@
             .upload-btn .label {
                 font-size: 0.5rem;
             }
-            .image-grid .image-wrapper {
-                aspect-ratio: 2/3;
-            }
             table {
                 font-size: 0.55rem;
                 min-width: 320px;
@@ -662,293 +609,466 @@
                 <label class="upload-btn camera">
                     <span class="icon">📸</span>
                     <span class="label">Снять фото</span>
-                    <input type="file" accept="image/*" capture="environment" multiple>
+                    <input type="file" accept="image/*" capture="environment">
                 </label>
                 <label class="upload-btn gallery">
                     <span class="icon">🖼️</span>
                     <span class="label">Выбрать из галереи</span>
-                    <input type="file" accept="image/*" multiple>
+                    <input type="file" accept="image/*">
                 </label>
             </div>
 
-            <div class="file-list" id="fileList">
-                <div style="font-size:0.7rem;color:#95486b;opacity:0.5;text-align:center;padding:0.3rem;">Файлы не выбраны</div>
+            <div class="preview-container" id="previewContainer">
+                <img id="previewImage" src="" alt="Предпросмотр">
+            </div>
+
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">Распознавание...</div>
+            </div>
+
+            <div class="status-message" id="statusMessage"></div>
+
+            <div class="recognized-text" id="recognizedText">
+                <div class="label">📝 Распознанный текст:</div>
+                <div id="textContent"></div>
             </div>
 
             <div class="actions-row">
-                <button class="btn btn-primary" id="loadImagesBtn">📥 Загрузить в галерею</button>
-                <button class="btn btn-danger" id="clearAllBtn">🗑️ Очистить всё</button>
+                <button class="btn btn-primary" id="recognizeBtn" disabled>🔍 Распознать</button>
+                <button class="btn btn-danger" id="clearBtn">🗑️ Очистить</button>
             </div>
         </div>
 
         <!-- КАРТОЧКА РАСПИСАНИЯ -->
-        <div class="schedule-card">
+        <div class="schedule-card" id="scheduleCard">
             <div class="schedule-header">
                 <h1>расписание ✦</h1>
                 <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-                    <span class="group-name">310Р15</span>
-                    <span class="count-badge" id="imageCount">0 фото</span>
+                    <span class="group-name" id="groupName">310Р15</span>
+                    <span class="count-badge" id="pairCount">0 пар</span>
                 </div>
             </div>
 
-            <!-- ДЕМО-ТАБЛИЦА -->
             <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr><th>день</th><th>время</th><th>предмет / преподаватель</th><th>ауд.</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="day-cell"><span>Пн</span></td><td><span class="pair-time">2 (10:45–12:20)</span></td><td><span class="subject">Учебная практика ПМ.02</span><span class="teacher">Демченко Е.В.</span></td><td><span class="room">9</span></td></tr>
-                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">3 (12:40–14:15)</span></td><td><span class="subject">Фотограф</span><span class="teacher">Радюк Л.А.</span></td><td><span class="room">ф/л</span></td></tr>
-                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">4 (14:30–16:05)</span></td><td><span class="subject">Учебная практика ПМ.05</span><span class="teacher">Радюк Л.А.</span></td><td><span class="room">ф/л</span></td></tr>
-                        <tr><td class="day-cell"><span>Вт</span></td><td><span class="pair-time">1 (09:00–10:35)</span></td><td><span class="subject">Производство рекламного продукта</span><span class="teacher">Доманов М.В.</span></td><td><span class="room">16</span></td></tr>
-                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">2 (10:45–12:20)</span></td><td><span class="subject">Русский язык и культура речи</span><span class="teacher">Сыромолот Е.Н.</span></td><td><span class="room">18</span></td></tr>
-                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">3 (12:40–14:15)</span></td><td><span class="subject">Художественное проектирование рекламного продукта</span><span class="teacher">Черноусенко М.В.</span></td><td><span class="room">15</span></td></tr>
-                        <tr><td class="day-cell"><span>Ср</span></td><td><span class="pair-time">1 (09:00–10:35)</span></td><td><span class="subject">Иностранный язык в профессиональной деятельности</span><span class="teacher">Гуца С.К. / Глинская И.В.</span></td><td><span class="room">3/20</span></td></tr>
-                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">2 (10:45–12:20)</span></td><td><span class="subject">Разработка и реализация творческой концепции рекламного продукта</span><span class="teacher">Доманов М.В.</span></td><td><span class="room">15</span></td></tr>
-                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">3 (12:40–14:15)</span></td><td><span class="subject">Учебная практика ПМ.04</span><span class="teacher">Доманов М.В.</span></td><td><span class="room">19</span></td></tr>
-                        <tr><td class="day-cell"><span>Чт</span></td><td><span class="pair-time">4 (14:30–16:05)</span></td><td><span class="subject">Организация и проведение рекламных и коммуникационных кампаний</span><span class="teacher">Демченко Е.В.</span></td><td><span class="room">9</span></td></tr>
-                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">5 (16:10–17:45)</span></td><td><span class="subject">Медиапланирование и медиабайт</span><span class="teacher">Гречанова А.В.</span></td><td><span class="room">5a</span></td></tr>
-                        <tr><td class="day-cell"><span>Пт</span></td><td><span class="pair-time">1 (09:00–10:35)</span></td><td><span class="subject">Организация и проведение рекламных и коммуникационных кампаний</span><span class="teacher">Демченко Е.В.</span></td><td><span class="room">9</span></td></tr>
-                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">2 (10:45–12:20)</span></td><td><span class="subject">Медиапланирование и медиабайт</span><span class="teacher">Гречанова А.В.</span></td><td><span class="room">5a</span></td></tr>
-                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">3 (12:40–14:15)</span></td><td><span class="subject">Физическая культура</span><span class="teacher">Ятрушева О.В.</span></td><td><span class="room">ф/з</span></td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- ГАЛЕРЕЯ -->
-            <div style="margin-top:0.5rem;">
-                <div style="font-size:0.8rem;color:#712f4b;font-weight:500;margin-bottom:0.5rem;">📸 Дополнительные фото</div>
-                <div class="scroll-container">
-                    <div id="imageGrid" class="image-grid">
-                        <div class="no-images">
-                            <span class="icon">🖼️</span>
-                            <p>Загрузите фото расписания</p>
-                            <p style="font-size:0.65rem;opacity:0.6;">Сфотографируйте или выберите из галереи</p>
-                        </div>
-                    </div>
+                <div id="scheduleContent">
+                    <table>
+                        <thead>
+                            <tr><th>день</th><th>время</th><th>предмет / преподаватель</th><th>ауд.</th></tr>
+                        </thead>
+                        <tbody id="scheduleBody">
+                            <tr>
+                                <td colspan="4" style="text-align:center;color:#95486b;padding:1.5rem;">
+                                    🖼️ Загрузите фото расписания для распознавания
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <div class="footer-actions">
-                <button class="btn btn-success" id="exportImagesBtn">💾 Сохранить как PDF</button>
-                <button class="btn btn-danger" id="clearImagesBtn">🗑️ Удалить фото</button>
+                <button class="btn btn-success" id="exportBtn">💾 Сохранить как JSON</button>
+                <button class="btn btn-danger" id="resetBtn">🔄 Сбросить на демо</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ===== СОСТОЯНИЕ =====
-        let uploadedFiles = [];
-        let imageUrls = [];
+        // ===== ДЕМО-ДАННЫЕ =====
+        const demoData = [
+            { day: 'Пн', time: '2 (10:45–12:20)', subject: 'Учебная практика ПМ.02', teacher: 'Демченко Е.В.', room: '9' },
+            { day: 'Пн', time: '3 (12:40–14:15)', subject: 'Фотограф', teacher: 'Радюк Л.А.', room: 'ф/л' },
+            { day: 'Пн', time: '4 (14:30–16:05)', subject: 'Учебная практика ПМ.05', teacher: 'Радюк Л.А.', room: 'ф/л' },
+            { day: 'Вт', time: '1 (09:00–10:35)', subject: 'Производство рекламного продукта', teacher: 'Доманов М.В.',
+            room: '16' },
+            { day: 'Вт', time: '2 (10:45–12:20)', subject: 'Русский язык и культура речи', teacher: 'Сыромолот Е.Н.',
+                room: '18' },
+            { day: 'Вт', time: '3 (12:40–14:15)', subject: 'Художественное проектирование рекламного продукта',
+                teacher: 'Черноусенко М.В.', room: '15' },
+            { day: 'Ср', time: '1 (09:00–10:35)', subject: 'Иностранный язык в профессиональной деятельности',
+                teacher: 'Гуца С.К. / Глинская И.В.', room: '3/20' },
+            { day: 'Ср', time: '2 (10:45–12:20)', subject: 'Разработка и реализация творческой концепции рекламного продукта',
+                teacher: 'Доманов М.В.', room: '15' },
+            { day: 'Ср', time: '3 (12:40–14:15)', subject: 'Учебная практика ПМ.04', teacher: 'Доманов М.В.', room: '19' },
+            { day: 'Чт', time: '4 (14:30–16:05)', subject: 'Организация и проведение рекламных и коммуникационных кампаний',
+                teacher: 'Демченко Е.В.', room: '9' },
+            { day: 'Чт', time: '5 (16:10–17:45)', subject: 'Медиапланирование и медиабайт', teacher: 'Гречанова А.В.',
+                room: '5a' },
+            { day: 'Пт', time: '1 (09:00–10:35)', subject: 'Организация и проведение рекламных и коммуникационных кампаний',
+                teacher: 'Демченко Е.В.', room: '9' },
+            { day: 'Пт', time: '2 (10:45–12:20)', subject: 'Медиапланирование и медиабайт', teacher: 'Гречанова А.В.',
+                room: '5a' },
+            { day: 'Пт', time: '3 (12:40–14:15)', subject: 'Физическая культура', teacher: 'Ятрушева О.В.', room: 'ф/з' }
+        ];
+
+        let currentSchedule = [...demoData];
+        let currentImageFile = null;
+        let currentImageUrl = null;
+        let isProcessing = false;
 
         // ===== DOM ЭЛЕМЕНТЫ =====
-        const fileListEl = document.getElementById('fileList');
-        const imageGridEl = document.getElementById('imageGrid');
-        const imageCountEl = document.getElementById('imageCount');
-        const loadBtn = document.getElementById('loadImagesBtn');
-        const clearAllBtn = document.getElementById('clearAllBtn');
-        const clearImagesBtn = document.getElementById('clearImagesBtn');
-        const exportBtn = document.getElementById('exportImagesBtn');
+        const fileInputs = document.querySelectorAll('.upload-btn input[type="file"]');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const recognizeBtn = document.getElementById('recognizeBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const scheduleBody = document.getElementById('scheduleBody');
+        const pairCount = document.getElementById('pairCount');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const statusMessage = document.getElementById('statusMessage');
+        const recognizedText = document.getElementById('recognizedText');
+        const textContent = document.getElementById('textContent');
 
-        // ===== ОБНОВЛЕНИЕ UI =====
-        function updateUI() {
-            // Список файлов
-            if (uploadedFiles.length === 0) {
-                fileListEl.innerHTML = `<div style="font-size:0.7rem;color:#95486b;opacity:0.5;text-align:center;padding:0.3rem;">Файлы не выбраны</div>`;
-            } else {
-                fileListEl.innerHTML = uploadedFiles.map((file, index) => `
-                    <div class="file-item">
-                        <span class="name">📎 ${file.name}</span>
-                        <span class="size">${(file.size / 1024).toFixed(0)} KB</span>
-                        <button class="remove-btn" data-index="${index}">✕</button>
-                    </div>
-                `).join('');
-
-                document.querySelectorAll('.file-item .remove-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const index = parseInt(this.dataset.index);
-                        uploadedFiles.splice(index, 1);
-                        updateUI();
-                    });
-                });
-            }
-
-            // Галерея
-            if (imageUrls.length === 0) {
-                imageGridEl.innerHTML = `
-                    <div class="no-images">
-                        <span class="icon">🖼️</span>
-                        <p>Загрузите фото расписания</p>
-                        <p style="font-size:0.65rem;opacity:0.6;">Сфотографируйте или выберите из галереи</p>
-                    </div>
+        // ===== ОТРИСОВКА ТАБЛИЦЫ =====
+        function renderSchedule(data) {
+            if (!data || data.length === 0) {
+                scheduleBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align:center;color:#95486b;padding:1.5rem;">
+                            📭 Расписание пусто
+                        </td>
+                    </tr>
                 `;
-                imageCountEl.textContent = '0 фото';
-            } else {
-                imageGridEl.innerHTML = imageUrls.map((url, index) => `
-                    <div class="image-wrapper">
-                        <img src="${url}" alt="Фото ${index + 1}" loading="lazy">
-                        <button class="remove-img" data-index="${index}">✕</button>
-                        <span class="page-number">${index + 1}</span>
-                    </div>
-                `).join('');
-
-                document.querySelectorAll('.image-wrapper .remove-img').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const index = parseInt(this.dataset.index);
-                        URL.revokeObjectURL(imageUrls[index]);
-                        imageUrls.splice(index, 1);
-                        updateUI();
-                    });
-                });
-
-                imageCountEl.textContent = `${imageUrls.length} фото`;
-            }
-
-            loadBtn.disabled = uploadedFiles.length === 0;
-        }
-
-        // ===== ДОБАВЛЕНИЕ ФАЙЛОВ =====
-        function addFiles(files) {
-            const validFiles = Array.from(files).filter(f => 
-                f.type.startsWith('image/') && 
-                ['image/png', 'image/jpeg', 'image/webp'].includes(f.type)
-            );
-
-            if (validFiles.length === 0) {
-                alert('📷 Пожалуйста, выберите изображения в формате PNG, JPG или WEBP');
+                pairCount.textContent = '0 пар';
                 return;
             }
 
-            uploadedFiles.push(...validFiles);
-            updateUI();
-        }
+            let html = '';
+            let currentDay = '';
+            let isFirst = true;
 
-        // ===== ЗАГРУЗКА В ГАЛЕРЕЮ =====
-        function loadImages() {
-            if (uploadedFiles.length === 0) return;
+            data.forEach((row, index) => {
+                const showDay = row.day !== currentDay;
+                currentDay = row.day;
 
-            uploadedFiles.forEach(file => {
-                const url = URL.createObjectURL(file);
-                imageUrls.push(url);
-            });
-
-            uploadedFiles = [];
-            updateUI();
-        }
-
-        // ===== ОЧИСТКА ВСЕГО =====
-        function clearAll() {
-            uploadedFiles = [];
-            imageUrls.forEach(url => URL.revokeObjectURL(url));
-            imageUrls = [];
-            updateUI();
-        }
-
-        // ===== ЭКСПОРТ В PDF =====
-        function exportAsPDF() {
-            if (imageUrls.length === 0) {
-                alert('📭 Нет изображений для экспорта');
-                return;
-            }
-
-            const printWindow = window.open('', '_blank', 'width=800,height=600');
-            if (!printWindow) {
-                alert('⚠️ Разрешите всплывающие окна для печати');
-                return;
-            }
-
-            let html = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Расписание 310Р15</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; background: white; text-align: center; }
-                        h1 { color: #8f4b6b; font-size: 24px; margin-bottom: 20px; }
-                        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1000px; margin: 0 auto; }
-                        .item { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: #fafafa; page-break-inside: avoid; }
-                        .item img { width: 100%; height: auto; display: block; }
-                        .item .label { padding: 8px; font-size: 12px; color: #666; background: #f5f5f5; }
-                        @media print { .item { page-break-inside: avoid; } }
-                    </style>
-                </head>
-                <body>
-                    <h1>📋 Расписание — группа 310Р15</h1>
-                    <div class="grid">
-            `;
-
-            imageUrls.forEach((url, index) => {
                 html += `
-                    <div class="item">
-                        <img src="${url}" alt="Страница ${index + 1}">
-                        <div class="label">Страница ${index + 1}</div>
-                    </div>
+                    <tr>
+                        ${showDay ? `<td class="day-cell"><span>${row.day}</span></td>` : `<td class="day-cell" style="background:transparent !important;border-radius:0;"></td>`}
+                        <td><span class="pair-time">${row.time}</span></td>
+                        <td>
+                            <span class="subject">${row.subject}</span>
+                            <span class="teacher">${row.teacher}</span>
+                        </td>
+                        <td><span class="room">${row.room}</span></td>
+                    </tr>
                 `;
             });
 
-            html += `
-                    </div>
-                    <p style="margin-top:30px;color:#999;font-size:12px;">Сгенерировано автоматически</p>
-                </body>
-                </html>
-            `;
+            scheduleBody.innerHTML = html;
+            pairCount.textContent = `${data.length} пар`;
+        }
 
-            printWindow.document.write(html);
-            printWindow.document.close();
+        // ===== ПОКАЗ СТАТУСА =====
+        function showStatus(message, type = 'info') {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message ' + type;
+        }
 
-            setTimeout(() => {
-                printWindow.print();
-            }, 1000);
+        function hideStatus() {
+            statusMessage.className = 'status-message';
+        }
+
+        // ===== ОБНОВЛЕНИЕ ПРОГРЕССА =====
+        function updateProgress(percent, text) {
+            progressFill.style.width = percent + '%';
+            progressText.textContent = text;
+        }
+
+        // ===== ПАРСИНГ РАСПИСАНИЯ ИЗ ТЕКСТА =====
+        function parseScheduleFromText(text) {
+            const lines = text.split('\n').filter(line => line.trim().length > 0);
+            const result = [];
+
+            const dayMap = {
+                'понедельник': 'Пн',
+                'вторник': 'Вт',
+                'среда': 'Ср',
+                'четверг': 'Чт',
+                'пятница': 'Пт',
+                'суббота': 'Сб',
+                'воскресенье': 'Вс',
+                'пн': 'Пн',
+                'вт': 'Вт',
+                'ср': 'Ср',
+                'чт': 'Чт',
+                'пт': 'Пт',
+                'сб': 'Сб',
+                'вс': 'Вс'
+            };
+
+            let currentDay = '';
+            let buffer = [];
+
+            for (let line of lines) {
+                line = line.trim();
+
+                // Проверяем, не является ли строка днём недели
+                const lowerLine = line.toLowerCase();
+                let foundDay = null;
+                for (const [key, value] of Object.entries(dayMap)) {
+                    if (lowerLine.includes(key) || lowerLine === key) {
+                        foundDay = value;
+                        break;
+                    }
+                }
+
+                if (foundDay) {
+                    // Сохраняем накопленные строки как одну запись
+                    if (buffer.length > 0 && currentDay) {
+                        const parsed = parseScheduleLine(buffer.join(' '), currentDay);
+                        if (parsed) result.push(parsed);
+                    }
+                    currentDay = foundDay;
+                    buffer = [];
+                    continue;
+                }
+
+                // Пытаемся распарсить строку с номером пары и временем
+                const timeMatch = line.match(/(\d+)\s*\((\d{2}:\d{2})[–-](\d{2}:\d{2})\)/);
+                if (timeMatch) {
+                    // Сохраняем предыдущий буфер
+                    if (buffer.length > 0 && currentDay) {
+                        const parsed = parseScheduleLine(buffer.join(' '), currentDay);
+                        if (parsed) result.push(parsed);
+                    }
+                    buffer = [line];
+                    continue;
+                }
+
+                // Если есть номер пары в начале
+                const pairMatch = line.match(/^(\d+)\s*[.)]\s*(.+)/);
+                if (pairMatch && currentDay) {
+                    if (buffer.length > 0) {
+                        const parsed = parseScheduleLine(buffer.join(' '), currentDay);
+                        if (parsed) result.push(parsed);
+                    }
+                    buffer = [line];
+                    continue;
+                }
+
+                // Добавляем строку в буфер
+                buffer.push(line);
+            }
+
+            // Обрабатываем последний буфер
+            if (buffer.length > 0 && currentDay) {
+                const parsed = parseScheduleLine(buffer.join(' '), currentDay);
+                if (parsed) result.push(parsed);
+            }
+
+            return result;
+        }
+
+        function parseScheduleLine(line, day) {
+            // Ищем время в формате "1 (09:00-10:35)" или "2 (10:45–12:20)"
+            let timeMatch = line.match(/(\d+)\s*\((\d{2}:\d{2})[–-](\d{2}:\d{2})\)/);
+            if (!timeMatch) {
+                // Пробуем другой формат: "1. 09:00-10:35"
+                timeMatch = line.match(/(\d+)[.)]\s*(\d{2}:\d{2})[–-](\d{2}:\d{2})/);
+                if (timeMatch) {
+                    return {
+                        day: day,
+                        time: `${timeMatch[1]} (${timeMatch[2]}–${timeMatch[3]})`,
+                        subject: line.replace(timeMatch[0], '').trim() || '—',
+                        teacher: '—',
+                        room: '—'
+                    };
+                }
+                // Если нет времени, пропускаем
+                return null;
+            }
+
+            const pairNum = timeMatch[1];
+            const timeStart = timeMatch[2];
+            const timeEnd = timeMatch[3];
+            const timeStr = `${pairNum} (${timeStart}–${timeEnd})`;
+
+            // Убираем время из строки
+            let rest = line.replace(timeMatch[0], '').trim();
+
+            // Ищем аудиторию (цифры или буквы с цифрами, или ф/л, ф/з)
+            let roomMatch = rest.match(/\b(ф\/[лз]|\d+[a-zA-Z]?|[a-zA-Z]\/\d+)\b/);
+            let room = '—';
+            let subjectTeacher = rest;
+
+            if (roomMatch) {
+                room = roomMatch[1];
+                subjectTeacher = rest.replace(roomMatch[0], '').trim();
+            }
+
+            // Пытаемся разделить на предмет и преподавателя
+            let subject = subjectTeacher;
+            let teacher = '—';
+
+            // Ищем ФИО с инициалами
+            const teacherMatch = subjectTeacher.match(/\s*([А-ЯЁ][а-яё]+\s+[А-ЯЁ]\.\s*[А-ЯЁ]\.?)/);
+            if (teacherMatch) {
+                teacher = teacherMatch[1].trim();
+                subject = subjectTeacher.replace(teacherMatch[0], '').trim();
+            }
+
+            // Убираем лишние разделители
+            subject = subject.replace(/^[–—\-:;,\s]+/, '');
+
+            return {
+                day: day,
+                time: timeStr,
+                subject: subject || '—',
+                teacher: teacher || '—',
+                room: room || '—'
+            };
+        }
+
+        // ===== РАСПОЗНАВАНИЕ =====
+        async function recognizeSchedule() {
+            if (!currentImageFile || isProcessing) return;
+
+            isProcessing = true;
+            recognizeBtn.disabled = true;
+            hideStatus();
+
+            progressContainer.classList.add('active');
+            updateProgress(0, 'Подготовка...');
+
+            try {
+                const imageUrl = URL.createObjectURL(currentImageFile);
+
+                // Показываем предпросмотр
+                previewImage.src = imageUrl;
+                previewContainer.classList.add('active');
+
+                // Распознаём текст
+                const result = await Tesseract.recognize(imageUrl, 'rus', {
+                    logger: (m) => {
+                        if (m.status === 'recognizing text') {
+                            const progress = Math.round(m.progress * 100);
+                            updateProgress(progress, `Распознавание: ${progress}%`);
+                        }
+                    }
+                });
+
+                const text = result.data.text;
+                textContent.textContent = text;
+                recognizedText.classList.add('active');
+
+                updateProgress(100, 'Готово!');
+
+                // Парсим расписание
+                const parsed = parseScheduleFromText(text);
+
+                if (parsed.length === 0) {
+                    showStatus('⚠️ Не удалось распознать расписание. Попробуйте другое фото или проверьте качество.', 'error');
+                } else {
+                    currentSchedule = parsed;
+                    renderSchedule(parsed);
+                    showStatus(`✅ Распознано ${parsed.length} пар!`, 'success');
+                }
+
+            } catch (error) {
+                console.error(error);
+                showStatus('❌ Ошибка распознавания: ' + error.message, 'error');
+            } finally {
+                isProcessing = false;
+                recognizeBtn.disabled = false;
+                setTimeout(() => {
+                    progressContainer.classList.remove('active');
+                }, 2000);
+            }
+        }
+
+        // ===== ОБРАБОТКА ФАЙЛА =====
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) {
+                alert('📷 Пожалуйста, выберите изображение');
+                return;
+            }
+
+            currentImageFile = file;
+            currentImageUrl = URL.createObjectURL(file);
+
+            // Показываем превью
+            previewImage.src = currentImageUrl;
+            previewContainer.classList.add('active');
+
+            recognizeBtn.disabled = false;
+            hideStatus();
+            recognizedText.classList.remove('active');
+            progressContainer.classList.remove('active');
+        }
+
+        // ===== ОЧИСТКА =====
+        function clearAll() {
+            if (currentImageUrl) {
+                URL.revokeObjectURL(currentImageUrl);
+            }
+            currentImageFile = null;
+            currentImageUrl = null;
+            previewContainer.classList.remove('active');
+            previewImage.src = '';
+            recognizeBtn.disabled = true;
+            hideStatus();
+            recognizedText.classList.remove('active');
+            textContent.textContent = '';
+            progressContainer.classList.remove('active');
+            fileInputs.forEach(input => input.value = '');
+        }
+
+        // ===== ЭКСПОРТ JSON =====
+        function exportJSON() {
+            const data = {
+                group: '310Р15',
+                schedule: currentSchedule
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'schedule.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         // ===== СОБЫТИЯ =====
 
-        // Выбор файлов
-        document.querySelectorAll('.upload-btn input[type="file"]').forEach(input => {
+        // Выбор файла
+        fileInputs.forEach(input => {
             input.addEventListener('change', function(e) {
                 if (this.files && this.files.length > 0) {
-                    addFiles(this.files);
+                    handleFile(this.files[0]);
                 }
                 this.value = '';
             });
         });
 
-        // Загрузить в галерею
-        loadBtn.addEventListener('click', loadImages);
+        // Распознать
+        recognizeBtn.addEventListener('click', recognizeSchedule);
 
-        // Очистить всё
-        clearAllBtn.addEventListener('click', function() {
-            if (uploadedFiles.length === 0 && imageUrls.length === 0) {
-                alert('📭 Нет данных для очистки');
-                return;
-            }
-            if (confirm('🗑️ Удалить все файлы и изображения?')) {
-                clearAll();
-            }
+        // Очистить
+        clearBtn.addEventListener('click', clearAll);
+
+        // Сброс на демо
+        resetBtn.addEventListener('click', function() {
+            currentSchedule = [...demoData];
+            renderSchedule(currentSchedule);
+            clearAll();
+            showStatus('🔄 Восстановлено демо-расписание', 'info');
+            setTimeout(hideStatus, 3000);
         });
 
-        // Удалить фото из галереи
-        clearImagesBtn.addEventListener('click', function() {
-            if (imageUrls.length === 0) {
-                alert('📭 Нет изображений для удаления');
-                return;
-            }
-            if (confirm('🗑️ Удалить все загруженные изображения?')) {
-                imageUrls.forEach(url => URL.revokeObjectURL(url));
-                imageUrls = [];
-                updateUI();
-            }
-        });
-
-        // Экспорт PDF
-        exportBtn.addEventListener('click', exportAsPDF);
+        // Экспорт JSON
+        exportBtn.addEventListener('click', exportJSON);
 
         // ===== ИНИЦИАЛИЗАЦИЯ =====
-        updateUI();
+        renderSchedule(demoData);
     </script>
 </body>
 </html>
