@@ -2,830 +2,773 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расписание — загрузка и просмотр</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Расписание 310Р15</title>
     <style>
-       * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background: linear-gradient(145deg, #ffe9f4 0%, #ffe0ed 100%);
-    font-family: 'Segoe UI', 'Quicksand', system-ui, sans-serif;
-    min-height: 100vh;
-    padding: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-}
-
-.container {
-    max-width: 1100px;
-    width: 100%;
-}
-
-/* карточка загрузки */
-.upload-card {
-    background: #fcf5f8;
-    border-radius: 40px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 8px 30px rgba(235, 120, 160, 0.15);
-    border: 1px solid rgba(255, 220, 235, 0.5);
-}
-
-.upload-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.6rem;
-    border-bottom: 2px dashed #ffdce8;
-}
-
-.upload-header h2 {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #8f4b6b;
-}
-
-.upload-header h2 span {
-    font-weight: 300;
-    opacity: 0.6;
-}
-
-.upload-header .hint-text {
-    font-size: 0.75rem;
-    color: #95486b;
-    background: #ffd9e6;
-    padding: 0.2rem 1rem;
-    border-radius: 30px;
-    border: 1px solid #ffb3cb;
-}
-
-.upload-area {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.7rem;
-}
-
-.file-input-wrapper {
-    position: relative;
-    flex: 1;
-    min-width: 160px;
-}
-
-.file-input-wrapper input[type="file"] {
-    position: absolute;
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-}
-
-.file-input-wrapper .fake-input {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    background: #fff3f7;
-    border: 2px dashed #ffbdd2;
-    border-radius: 40px;
-    padding: 0.5rem 1.2rem;
-    color: #712f4b;
-    font-size: 0.85rem;
-    transition: all 0.2s;
-    cursor: pointer;
-}
-
-.file-input-wrapper .fake-input:hover {
-    background: #ffeef3;
-    border-color: #ffb0c8;
-}
-
-.file-input-wrapper .fake-input .icon {
-    font-size: 1rem;
-    opacity: 0.6;
-}
-
-.file-name {
-    font-size: 0.75rem;
-    color: #95486b;
-    padding: 0.2rem 0.6rem;
-    background: #fff3f7;
-    border-radius: 30px;
-    border: 1px solid #ffbdd2;
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.btn {
-    background: #fbc4d0;
-    border: 1px solid #ffb3cb;
-    color: #582f41;
-    padding: 0.5rem 1.5rem;
-    border-radius: 40px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn:hover {
-    background: #ffb8cf;
-    border-color: #ffb0c8;
-}
-
-.btn-primary {
-    background: #ffbdd2;
-    border-color: #ffb0c8;
-    color: #582f41;
-}
-
-.btn-primary:hover {
-    background: #ffb0c8;
-}
-
-.btn-danger {
-    background: #ffd9e6;
-    border-color: #ffbdd2;
-    color: #712f4b;
-}
-
-.btn-danger:hover {
-    background: #ffc8d8;
-}
-
-.upload-actions {
-    display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.hint {
-    font-size: 0.7rem;
-    color: #95486b;
-    margin-top: 0.6rem;
-    padding: 0.4rem 0.8rem;
-    background: #fff3f7;
-    border-radius: 30px;
-    border: 1px solid #ffdce8;
-}
-
-.hint code {
-    background: #ffd9e6;
-    padding: 0.05rem 0.4rem;
-    border-radius: 4px;
-    font-family: inherit;
-    font-size: 0.65rem;
-    color: #6d3a52;
-    border: 1px solid #ffbdd2;
-}
-
-.hint .btn-small {
-    padding: 0.15rem 0.6rem;
-    font-size: 0.65rem;
-    margin-left: 0.4rem;
-}
-
-/* карточка расписания */
-.schedule-card {
-    background: #fcf5f8;
-    border-radius: 40px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 30px rgba(235, 120, 160, 0.15);
-    border: 1px solid rgba(255, 220, 235, 0.5);
-    position: relative;
-    display: none;
-}
-
-.schedule-card.visible {
-    display: block;
-}
-
-.schedule-card .deco-dots {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    display: flex;
-    gap: 5px;
-}
-
-.schedule-card .deco-dots span {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #ffbdd2;
-    opacity: 0.4;
-}
-
-.schedule-card .deco-dots span:nth-child(2) {
-    opacity: 0.6;
-    width: 7px;
-    height: 7px;
-}
-
-/* заголовок расписания */
-.schedule-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.6rem;
-    border-bottom: 2px dashed #ffdce8;
-}
-
-.schedule-header h1 {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #8f4b6b;
-    letter-spacing: 0.5px;
-}
-
-.schedule-header h1 .accent {
-    font-weight: 300;
-    color: #fbc4d0;
-}
-
-.schedule-header .group-name {
-    background: #ffd9e6;
-    color: #783f5b;
-    font-weight: 500;
-    padding: 0.2rem 1.2rem;
-    border-radius: 30px;
-    font-size: 0.8rem;
-    border: 1px solid #ffb3cb;
-}
-
-/* таблица */
-.table-wrap {
-    overflow-x: auto;
-    border-radius: 30px;
-    background: rgba(255, 240, 245, 0.3);
-    padding: 0.1rem;
-    border: 1px solid rgba(255, 220, 235, 0.3);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-    background: transparent;
-    min-width: 600px;
-}
-
-th {
-    background: #fbc4d0;
-    color: #582f41;
-    font-weight: 600;
-    padding: 0.7rem 0.5rem;
-    text-align: center;
-    border-bottom: 2px solid #ffb0c8;
-    font-size: 0.7rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-th:first-child {
-    border-radius: 20px 0 0 0;
-}
-th:last-child {
-    border-radius: 0 20px 0 0;
-}
-
-td {
-    background: #fcf7f9;
-    padding: 0.6rem 0.4rem;
-    text-align: center;
-    border-bottom: 1px solid #ffdce8;
-    vertical-align: middle;
-    color: #3e2a30;
-}
-
-tr:last-child td {
-    border-bottom: none;
-}
-
-td:first-child {
-    font-weight: 500;
-    background: #fff3f7;
-    border-radius: 16px 0 0 16px;
-}
-
-td:last-child {
-    border-radius: 0 16px 16px 0;
-}
-
-tr:hover td {
-    background: #ffeef3;
-}
-
-tr:hover td:first-child {
-    background: #ffdde9;
-}
-
-/* день недели */
-.day-cell {
-    background: #ffdde9 !important;
-    font-weight: 600;
-    color: #712f4b;
-    border-radius: 16px 0 0 16px;
-    font-size: 0.8rem;
-}
-
-.day-cell span {
-    display: inline-block;
-    background: #ffffff;
-    padding: 0.1rem 1rem;
-    border-radius: 30px;
-    font-size: 0.75rem;
-    border: 1px solid #ffbdd2;
-}
-
-/* время */
-.pair-time {
-    font-weight: 500;
-    color: #56333f;
-    background: #fbdae6;
-    padding: 0.1rem 0.7rem;
-    border-radius: 30px;
-    font-size: 0.65rem;
-    display: inline-block;
-    border: 1px solid #ffb8cf;
-    white-space: nowrap;
-}
-
-/* предмет + преподаватель */
-.subject {
-    font-weight: 500;
-    color: #3c2430;
-    display: block;
-    margin-bottom: 0.05rem;
-    font-size: 0.82rem;
-}
-
-.teacher {
-    font-weight: 400;
-    color: #643e4e;
-    font-size: 0.72rem;
-}
-
-.teacher::before {
-    content: "— ";
-    opacity: 0.5;
-}
-
-/* аудитория */
-.room {
-    background: #ffeef5;
-    border-radius: 30px;
-    padding: 0.1rem 0.8rem;
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: #95486b;
-    display: inline-block;
-    border: 1px solid #ffbdd2;
-    min-width: 2rem;
-    transition: all 0.2s;
-}
-
-tr:hover .room {
-    background: #ffdde9;
-    border-color: #ffb0c8;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 2rem 1rem;
-    color: #95486b;
-}
-
-.empty-state .big-icon {
-    font-size: 2.5rem;
-    opacity: 0.3;
-    margin-bottom: 0.3rem;
-}
-
-.empty-state p {
-    font-size: 0.95rem;
-}
-
-/* футер */
-.footer-actions {
-    margin-top: 1.2rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.8rem;
-    flex-wrap: wrap;
-    padding-top: 0.8rem;
-    border-top: 2px dashed #ffdce8;
-}
-
-/* ===== МОБИЛЬНАЯ ОПТИМИЗАЦИЯ ===== */
-
-/* Планшеты и маленькие ноутбуки */
-@media (max-width: 768px) {
-    .upload-card,
-    .schedule-card {
-        padding: 1rem;
-        border-radius: 30px;
-    }
-
-    .upload-header h2 {
-        font-size: 1.2rem;
-    }
-
-    .upload-area {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .file-input-wrapper {
-        min-width: auto;
-    }
-
-    .file-input-wrapper .fake-input {
-        padding: 0.4rem 1rem;
-        font-size: 0.8rem;
-    }
-
-    .btn {
-        padding: 0.4rem 1rem;
-        font-size: 0.8rem;
-    }
-
-    .schedule-header h1 {
-        font-size: 1.4rem;
-    }
-
-    .schedule-header .group-name {
-        font-size: 0.7rem;
-        padding: 0.15rem 0.8rem;
-    }
-
-    .schedule-card .deco-dots {
-        display: none;
-    }
-
-    .upload-header .hint-text {
-        font-size: 0.65rem;
-        padding: 0.15rem 0.6rem;
-    }
-
-    .file-name {
-        font-size: 0.7rem;
-        max-width: 100%;
-    }
-}
-
-/* Телефоны */
-@media (max-width: 480px) {
-    body {
-        padding: 0.5rem;
-    }
-
-    .upload-card,
-    .schedule-card {
-        padding: 0.8rem;
-        border-radius: 24px;
-        box-shadow: 0 4px 15px rgba(235, 120, 160, 0.1);
-    }
-
-    .upload-header h2 {
-        font-size: 1rem;
-    }
-
-    .upload-header {
-        gap: 0.4rem;
-        margin-bottom: 0.8rem;
-        padding-bottom: 0.4rem;
-    }
-
-    .upload-area {
-        gap: 0.5rem;
-    }
-
-    .file-input-wrapper .fake-input {
-        padding: 0.35rem 0.8rem;
-        font-size: 0.75rem;
-        border-radius: 30px;
-    }
-
-    .file-input-wrapper .fake-input .icon {
-        font-size: 0.8rem;
-    }
-
-    .btn {
-        padding: 0.35rem 0.8rem;
-        font-size: 0.75rem;
-        border-radius: 30px;
-    }
-
-    .upload-actions {
-        gap: 0.4rem;
-    }
-
-    .hint {
-        font-size: 0.6rem;
-        padding: 0.3rem 0.6rem;
-        border-radius: 20px;
-        margin-top: 0.4rem;
-    }
-
-    .hint code {
-        font-size: 0.55rem;
-        padding: 0.05rem 0.3rem;
-    }
-
-    .hint .btn-small {
-        font-size: 0.55rem;
-        padding: 0.1rem 0.5rem;
-    }
-
-    /* таблица на телефоне */
-    .table-wrap {
-        border-radius: 20px;
-        padding: 0.05rem;
-    }
-
-    table {
-        font-size: 0.7rem;
-        min-width: 400px;
-    }
-
-    th {
-        padding: 0.4rem 0.3rem;
-        font-size: 0.6rem;
-        letter-spacing: 0.5px;
-    }
-
-    th:first-child {
-        border-radius: 14px 0 0 0;
-    }
-    th:last-child {
-        border-radius: 0 14px 0 0;
-    }
-
-    td {
-        padding: 0.4rem 0.25rem;
-        font-size: 0.6rem;
-    }
-
-    td:first-child {
-        border-radius: 12px 0 0 12px;
-    }
-    td:last-child {
-        border-radius: 0 12px 12px 0;
-    }
-
-    .subject {
-        font-size: 0.65rem;
-    }
-
-    .teacher {
-        font-size: 0.55rem;
-    }
-
-    .teacher::before {
-        content: "—";
-        opacity: 0.4;
-    }
-
-    .room {
-        font-size: 0.55rem;
-        padding: 0.05rem 0.5rem;
-        min-width: 1.4rem;
-        border-radius: 20px;
-    }
-
-    .pair-time {
-        font-size: 0.5rem;
-        padding: 0.05rem 0.4rem;
-        border-radius: 20px;
-    }
-
-    .day-cell {
-        font-size: 0.65rem;
-        border-radius: 12px 0 0 12px;
-    }
-
-    .day-cell span {
-        font-size: 0.6rem;
-        padding: 0.05rem 0.6rem;
-        border-radius: 20px;
-    }
-
-    .schedule-header {
-        margin-bottom: 0.8rem;
-        padding-bottom: 0.4rem;
-    }
-
-    .schedule-header h1 {
-        font-size: 1.1rem;
-    }
-
-    .schedule-header .group-name {
-        font-size: 0.6rem;
-        padding: 0.1rem 0.6rem;
-        border-radius: 20px;
-    }
-
-    .footer-actions {
-        margin-top: 0.8rem;
-        padding-top: 0.6rem;
-        gap: 0.5rem;
-    }
-
-    .empty-state {
-        padding: 1.5rem 0.5rem;
-    }
-
-    .empty-state .big-icon {
-        font-size: 2rem;
-    }
-
-    .empty-state p {
-        font-size: 0.8rem;
-    }
-}
-
-/* очень маленькие телефоны */
-@media (max-width: 380px) {
-    table {
-        font-size: 0.6rem;
-        min-width: 320px;
-    }
-
-    td {
-        padding: 0.3rem 0.15rem;
-    }
-
-    .subject {
-        font-size: 0.55rem;
-    }
-
-    .room {
-        font-size: 0.5rem;
-        padding: 0.05rem 0.3rem;
-        min-width: 1.2rem;
-    }
-
-    .pair-time {
-        font-size: 0.45rem;
-        padding: 0.05rem 0.3rem;
-    }
-
-    .day-cell span {
-        font-size: 0.5rem;
-        padding: 0.05rem 0.4rem;
-    }
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #ffe9f4 0%, #ffe0ed 100%);
+            font-family: 'Segoe UI', 'Quicksand', system-ui, sans-serif;
+            min-height: 100vh;
+            padding: 0.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        /* ===== КАРТОЧКА ЗАГРУЗКИ ===== */
+        .upload-card {
+            background: #fcf5f8;
+            border-radius: 32px;
+            padding: 1.2rem 1rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 6px 24px rgba(235, 120, 160, 0.12);
+            border: 1px solid rgba(255, 220, 235, 0.5);
+        }
+
+        .upload-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px dashed #ffdce8;
+        }
+
+        .upload-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #8f4b6b;
+        }
+
+        .upload-header .hint-text {
+            font-size: 0.65rem;
+            color: #95486b;
+            background: #ffd9e6;
+            padding: 0.15rem 0.8rem;
+            border-radius: 30px;
+            border: 1px solid #ffb3cb;
+            white-space: nowrap;
+        }
+
+        /* ===== КНОПКИ ЗАГРУЗКИ ===== */
+        .upload-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .upload-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            background: #fff3f7;
+            border: 2px dashed #ffbdd2;
+            border-radius: 24px;
+            padding: 1rem 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: #712f4b;
+            font-size: 0.8rem;
+            font-weight: 500;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            min-height: 80px;
+        }
+
+        .upload-btn:active {
+            transform: scale(0.96);
+            background: #ffeef3;
+        }
+
+        .upload-btn .icon {
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .upload-btn .label {
+            font-size: 0.7rem;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .upload-btn input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+        }
+
+        .upload-btn.camera {
+            background: #ffd9e6;
+            border-color: #ffb0c8;
+        }
+
+        .upload-btn.camera:active {
+            background: #ffc8d8;
+        }
+
+        .upload-btn.gallery {
+            background: #fce4ed;
+            border-color: #ffc0d0;
+        }
+
+        .upload-btn.gallery:active {
+            background: #ffd5e0;
+        }
+
+        /* ===== ФАЙЛЫ В ОЧЕРЕДИ ===== */
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-top: 0.6rem;
+            max-height: 200px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff3f7;
+            padding: 0.4rem 0.8rem;
+            border-radius: 16px;
+            border: 1px solid #ffdce8;
+            font-size: 0.75rem;
+            color: #3e2a30;
+            gap: 0.5rem;
+        }
+
+        .file-item .name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .file-item .size {
+            font-size: 0.6rem;
+            color: #95486b;
+            opacity: 0.7;
+            white-space: nowrap;
+        }
+
+        .file-item .remove-btn {
+            background: none;
+            border: none;
+            color: #95486b;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0 0.2rem;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .file-item .remove-btn:active {
+            opacity: 1;
+        }
+
+        /* ===== КНОПКИ ДЕЙСТВИЙ ===== */
+        .actions-row {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #ffb3cb;
+            text-align: center;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: #ffbdd2;
+            border-color: #ffb0c8;
+            color: #582f41;
+        }
+
+        .btn-primary:active {
+            background: #ffb0c8;
+        }
+
+        .btn-danger {
+            background: #ffd9e6;
+            border-color: #ffbdd2;
+            color: #712f4b;
+        }
+
+        .btn-danger:active {
+            background: #ffc8d8;
+        }
+
+        .btn-success {
+            background: #d4e8d4;
+            border-color: #b8d4b8;
+            color: #3a6a3a;
+        }
+
+        .btn-success:active {
+            background: #c0dcc0;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* ===== КАРТОЧКА РАСПИСАНИЯ ===== */
+        .schedule-card {
+            background: #fcf5f8;
+            border-radius: 32px;
+            padding: 1.2rem 1rem;
+            box-shadow: 0 6px 24px rgba(235, 120, 160, 0.12);
+            border: 1px solid rgba(255, 220, 235, 0.5);
+            display: block;
+        }
+
+        .schedule-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px dashed #ffdce8;
+        }
+
+        .schedule-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #8f4b6b;
+        }
+
+        .schedule-header .group-name {
+            background: #ffd9e6;
+            color: #783f5b;
+            font-weight: 500;
+            padding: 0.15rem 1rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            border: 1px solid #ffb3cb;
+        }
+
+        .schedule-header .count-badge {
+            background: #fbc4d0;
+            color: #582f41;
+            padding: 0.15rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            border: 1px solid #ffb3cb;
+        }
+
+        /* ===== ТАБЛИЦА (ДЕМО) ===== */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 24px;
+            background: rgba(255, 240, 245, 0.3);
+            padding: 0.1rem;
+            border: 1px solid rgba(255, 220, 235, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            background: transparent;
+            min-width: 500px;
+        }
+
+        th {
+            background: #fbc4d0;
+            color: #582f41;
+            font-weight: 600;
+            padding: 0.6rem 0.4rem;
+            text-align: center;
+            border-bottom: 2px solid #ffb0c8;
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        th:first-child {
+            border-radius: 16px 0 0 0;
+        }
+        th:last-child {
+            border-radius: 0 16px 0 0;
+        }
+
+        td {
+            background: #fcf7f9;
+            padding: 0.5rem 0.3rem;
+            text-align: center;
+            border-bottom: 1px solid #ffdce8;
+            vertical-align: middle;
+            color: #3e2a30;
+            font-size: 0.7rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        td:first-child {
+            font-weight: 500;
+            background: #fff3f7;
+            border-radius: 12px 0 0 12px;
+        }
+
+        td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        tr:hover td {
+            background: #ffeef3;
+        }
+
+        tr:hover td:first-child {
+            background: #ffdde9;
+        }
+
+        .day-cell {
+            background: #ffdde9 !important;
+            font-weight: 600;
+            color: #712f4b;
+            border-radius: 12px 0 0 12px;
+            font-size: 0.75rem;
+        }
+
+        .day-cell span {
+            display: inline-block;
+            background: #ffffff;
+            padding: 0.05rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            border: 1px solid #ffbdd2;
+        }
+
+        .pair-time {
+            font-weight: 500;
+            color: #56333f;
+            background: #fbdae6;
+            padding: 0.05rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            display: inline-block;
+            border: 1px solid #ffb8cf;
+            white-space: nowrap;
+        }
+
+        .subject {
+            font-weight: 500;
+            color: #3c2430;
+            display: block;
+            font-size: 0.75rem;
+        }
+
+        .teacher {
+            font-weight: 400;
+            color: #643e4e;
+            font-size: 0.65rem;
+        }
+
+        .teacher::before {
+            content: "— ";
+            opacity: 0.5;
+        }
+
+        .room {
+            background: #ffeef5;
+            border-radius: 20px;
+            padding: 0.05rem 0.7rem;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: #95486b;
+            display: inline-block;
+            border: 1px solid #ffbdd2;
+            min-width: 1.8rem;
+        }
+
+        /* ===== ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ ===== */
+        .image-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+
+        .image-grid .image-wrapper {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid #ffdce8;
+            background: #fff3f7;
+            aspect-ratio: 4/3;
+        }
+
+        .image-grid .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            background: #fff3f7;
+        }
+
+        .image-grid .image-wrapper .remove-img {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ffbdd2;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 0.8rem;
+            color: #95486b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .image-grid .image-wrapper .remove-img:active {
+            transform: scale(0.9);
+            background: #ffd9e6;
+        }
+
+        .image-grid .image-wrapper .page-number {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 0.05rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.55rem;
+            color: #582f41;
+            border: 1px solid #ffbdd2;
+        }
+
+        .no-images {
+            text-align: center;
+            padding: 1rem 0.5rem;
+            color: #95486b;
+            font-size: 0.8rem;
+            grid-column: 1/-1;
+        }
+
+        .no-images .icon {
+            font-size: 2rem;
+            opacity: 0.3;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-actions .btn {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        /* ===== АДАПТИВ ===== */
+
+        @media (min-width: 600px) {
+            .upload-buttons {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .image-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .upload-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.4rem;
+            }
+
+            .upload-card,
+            .schedule-card {
+                padding: 0.8rem 0.6rem;
+                border-radius: 24px;
+            }
+
+            .upload-header h2 {
+                font-size: 1rem;
+            }
+
+            .upload-buttons {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.4rem;
+            }
+
+            .upload-btn {
+                min-height: 64px;
+                padding: 0.6rem 0.3rem;
+                border-radius: 18px;
+            }
+
+            .upload-btn .icon {
+                font-size: 1.4rem;
+            }
+
+            .upload-btn .label {
+                font-size: 0.6rem;
+            }
+
+            .btn {
+                font-size: 0.7rem;
+                padding: 0.5rem 0.6rem;
+                min-height: 38px;
+                border-radius: 30px;
+            }
+
+            .image-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.4rem;
+            }
+
+            .image-grid .image-wrapper {
+                border-radius: 12px;
+                aspect-ratio: 3/4;
+            }
+
+            .image-grid .image-wrapper .remove-img {
+                width: 24px;
+                height: 24px;
+                font-size: 0.7rem;
+            }
+
+            .schedule-header h1 {
+                font-size: 1.1rem;
+            }
+
+            .schedule-header .group-name {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.6rem;
+            }
+
+            .schedule-header .count-badge {
+                font-size: 0.55rem;
+                padding: 0.1rem 0.5rem;
+            }
+
+            .file-item {
+                font-size: 0.65rem;
+                padding: 0.3rem 0.6rem;
+                border-radius: 12px;
+            }
+
+            table {
+                font-size: 0.65rem;
+                min-width: 380px;
+            }
+
+            th {
+                font-size: 0.55rem;
+                padding: 0.4rem 0.25rem;
+            }
+
+            td {
+                font-size: 0.6rem;
+                padding: 0.35rem 0.2rem;
+            }
+
+            .subject {
+                font-size: 0.65rem;
+            }
+
+            .teacher {
+                font-size: 0.55rem;
+            }
+
+            .room {
+                font-size: 0.55rem;
+                padding: 0.05rem 0.4rem;
+                min-width: 1.4rem;
+            }
+
+            .pair-time {
+                font-size: 0.5rem;
+                padding: 0.05rem 0.4rem;
+            }
+
+            .day-cell {
+                font-size: 0.65rem;
+            }
+
+            .day-cell span {
+                font-size: 0.6rem;
+                padding: 0.05rem 0.5rem;
+            }
+
+            .no-images {
+                font-size: 0.7rem;
+                padding: 1rem 0.3rem;
+            }
+
+            .no-images .icon {
+                font-size: 1.8rem;
+            }
+
+            .footer-actions .btn {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.5rem;
+                min-width: 60px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .upload-buttons {
+                gap: 0.3rem;
+            }
+
+            .upload-btn {
+                min-height: 54px;
+                padding: 0.4rem 0.2rem;
+                border-radius: 14px;
+            }
+
+            .upload-btn .icon {
+                font-size: 1.2rem;
+            }
+
+            .upload-btn .label {
+                font-size: 0.5rem;
+            }
+
+            .image-grid {
+                gap: 0.3rem;
+            }
+
+            .image-grid .image-wrapper {
+                aspect-ratio: 2/3;
+            }
+
+            table {
+                font-size: 0.55rem;
+                min-width: 320px;
+            }
+
+            td {
+                padding: 0.25rem 0.15rem;
+            }
+
+            .subject {
+                font-size: 0.55rem;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .image-wrapper {
+            animation: fadeIn 0.2s ease;
+        }
+
+        .scroll-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- карточка загрузки -->
+        <!-- КАРТОЧКА ЗАГРУЗКИ -->
         <div class="upload-card">
             <div class="upload-header">
-                <h2>📋 загрузить <span>расписание</span></h2>
-                <span style="font-size:0.85rem; color:#8a7564;">формат: JSON</span>
+                <h2>📋 загрузить <span style="font-weight:300;opacity:0.6;">расписание</span></h2>
+                <span class="hint-text">PNG / JPG / WEBP</span>
             </div>
 
-            <div class="upload-area">
-                <div class="file-input-wrapper">
-                    <input type="file" id="fileInput" accept=".json">
-                    <div class="fake-input">
-                        <span class="icon">📂</span>
-                        <span>Выберите файл</span>
-                    </div>
-                </div>
-                <span class="file-name" id="fileName">файл не выбран</span>
-                <div class="upload-actions">
-                    <button class="btn btn-primary" id="loadBtn">Загрузить</button>
-                    <button class="btn btn-danger" id="clearBtn">Очистить</button>
-                </div>
+            <div class="upload-buttons">
+                <label class="upload-btn camera">
+                    <span class="icon">📸</span>
+                    <span class="label">Снять фото</span>
+                    <input type="file" accept="image/*" capture="environment" multiple>
+                </label>
+                <label class="upload-btn gallery">
+                    <span class="icon">🖼️</span>
+                    <span class="label">Выбрать из галереи</span>
+                    <input type="file" accept="image/*" multiple>
+                </label>
             </div>
-            <div class="hint">
-                <span>📌 Пример формата: </span>
-                <code>{"group":"310Р15","schedule":[{ "day":"Пн", "pairs":[{"time":"2 (10:45–12:20)","subject":"...","teacher":"...","room":"..."} ] }]}</code>
-                <button class="btn" id="exampleBtn" style="padding:0.2rem 0.8rem; font-size:0.75rem; margin-left:0.5rem;">📥 скачать пример</button>
+
+            <div class="file-list" id="fileList"></div>
+
+            <div class="actions-row">
+                <button class="btn btn-primary" id="loadImagesBtn">📥 Загрузить</button>
+                <button class="btn btn-danger" id="clearAllBtn">🗑️ Очистить</button>
             </div>
         </div>
 
-        <!-- карточка расписания -->
+        <!-- КАРТОЧКА РАСПИСАНИЯ -->
         <div class="schedule-card" id="scheduleCard">
-            <div class="deco-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-
             <div class="schedule-header">
-                <h1>расписание <span class="accent">✦</span></h1>
-                <span class="group-name" id="groupName">310Р15</span>
-            </div>
-
-            <div class="table-wrap">
-                <div id="scheduleContent">
-                    <div class="empty-state">
-                        <div class="big-icon">📭</div>
-                        <p>Расписание не загружено</p>
-                    </div>
+                <h1>расписание ✦</h1>
+                <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+                    <span class="group-name">310Р15</span>
+                    <span class="count-badge" id="imageCount">0 фото</span>
                 </div>
             </div>
 
-            <div class="footer-actions">
-                <button class="btn" id="exportBtn">📥 Экспортировать JSON</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // === ДАННЫЕ ПО УМОЛЧАНИЮ ===
-        const defaultSchedule = {
-            group: "310Р15",
-            schedule: [
-                {
-                    day: "Пн",
-                    pairs: [
-                        { time: "2 (10:45–12:20)", subject: "Учебная практика ПМ.02", teacher: "Демченко Е.В.", room: "9" },
-                        { time: "3 (12:40–14:15)", subject: "Фотограф", teacher: "Радюк Л.А.", room: "ф/л" },
-                        { time: "4 (14:30–16:05)", subject: "Учебная практика ПМ.05", teacher: "Радюк Л.А.", room: "ф/л" }
-                    ]
-                },
-                {
-                    day: "Вт",
-                    pairs: [
-                        { time: "1 (09:00–10:35)", subject: "Производство рекламного продукта", teacher: "Доманов М.В.", room: "16" },
-                        { time: "2 (10:45–12:20)", subject: "Русский язык и культура речи", teacher: "Сыромолот Е.Н.", room: "18" },
-                        { time: "3 (12:40–14:15)", subject: "Художественное проектирование рекламного продукта", teacher: "Черноусенко М.В.", room: "15" }
-                    ]
-                },
-                {
-                    day: "Ср",
-                    pairs: [
-                        { time: "1 (09:00–10:35)", subject: "Иностранный язык в профессиональной деятельности", teacher: "Гуца С.К. / Глинская И.В.", room: "3/20" },
-                        { time: "2 (10:45–12:20)", subject: "Разработка и реализация творческой концепции рекламного продукта", teacher: "Доманов М.В.", room: "15" },
-                        { time: "3 (12:40–14:15)", subject: "Учебная практика ПМ.04", teacher: "Доманов М.В.", room: "19" }
-                    ]
-                },
-                {
-                    day: "Чт",
-                    pairs: [
-                        { time: "4 (14:30–16:05)", subject: "Организация и проведение рекламных и коммуникационных кампаний", teacher: "Демченко Е.В.", room: "9" },
-                        { time: "5 (16:10–17:45)", subject: "Медиапланирование и медиабайт", teacher: "Гречанова А.В.", room: "5a" }
-                    ]
-                },
-                {
-                    day: "Пт",
-                    pairs: [
-                        { time: "1 (09:00–10:35)", subject: "Организация и проведение рекламных и коммуникационных кампаний", teacher: "Демченко Е.В.", room: "9" },
-                        { time: "2 (10:45–12:20)", subject: "Медиапланирование и медиабайт", teacher: "Гречанова А.В.", room: "5a" },
-                        { time: "3 (12:40–14:15)", subject: "Физическая культура", teacher: "Ятрушева О.В.", room: "ф/з" }
-                    ]
-                }
-            ]
-        };
-
-        let currentData = null;
-        let fileName = '';
-
-        // === ЭЛЕМЕНТЫ ===
-        const fileInput = document.getElementById('fileInput');
-        const fileNameEl = document.getElementById('fileName');
-        const loadBtn = document.getElementById('loadBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const exampleBtn = document.getElementById('exampleBtn');
-        const exportBtn = document.getElementById('exportBtn');
-        const scheduleCard = document.getElementById('scheduleCard');
-        const scheduleContent = document.getElementById('scheduleContent');
-        const groupNameEl = document.getElementById('groupName');
-
-        // === ФУНКЦИЯ ОТРИСОВКИ ===
-        function renderSchedule(data) {
-            if (!data || !data.schedule || data.schedule.length === 0) {
-                scheduleContent.innerHTML = `
-                    <div class="empty-state">
-                        <div class="big-icon">📭</div>
-                        <p>Расписание не загружено</p>
-                    </div>
-                `;
-                scheduleCard.classList.remove('visible');
-                return;
-            }
-
-            scheduleCard.classList.add('visible');
-            groupNameEl.textContent = data.group || 'Группа';
-
-            let html = `
+            <!-- ДЕМО-ТАБЛИЦА (ВСЕ ПАРЫ) -->
+            <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
@@ -836,126 +779,281 @@ tr:hover .room {
                         </tr>
                     </thead>
                     <tbody>
-            `;
-
-            data.schedule.forEach((dayData, dayIndex) => {
-                const day = dayData.day;
-                const pairs = dayData.pairs || [];
-
-                pairs.forEach((pair, pairIndex) => {
-                    const isFirst = pairIndex === 0;
-                    html += `
+                        <!-- ПОНЕДЕЛЬНИК -->
                         <tr>
-                            ${isFirst ? `<td class="day-cell"><span>${day}</span></td>` : `<td class="day-cell" style="background:transparent !important; border-radius:0;"></td>`}
-                            <td><span class="pair-time">${pair.time}</span></td>
+                            <td class="day-cell"><span>Пн</span></td>
+                            <td><span class="pair-time">2 (10:45–12:20)</span></td>
                             <td>
-                                <span class="subject">${pair.subject}</span>
-                                <span class="teacher">${pair.teacher}</span>
+                                <span class="subject">Учебная практика ПМ.02</span>
+                                <span class="teacher">Демченко Е.В.</span>
                             </td>
-                            <td><span class="room">${pair.room}</span></td>
+                            <td><span class="room">9</span></td>
                         </tr>
-                    `;
-                });
-            });
+                        <tr>
+                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
+                            <td><span class="pair-time">3 (12:40–14:15)</span></td>
+                            <td>
+                                <span class="subject">Фотограф</span>
+                                <span class="teacher">Радюк Л.А.</span>
+                            </td>
+                            <td><span class="room">ф/л</span></td>
+                        </tr>
+                        <tr>
+                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
+                            <td><span class="pair-time">4 (14:30–16:05)</span></td>
+                            <td>
+                                <span class="subject">Учебная практика ПМ.05</span>
+                                <span class="teacher">Радюк Л.А.</span>
+                            </td>
+                            <td><span class="room">ф/л</span></td>
+                        </tr>
 
-            html += `
+                        <!-- ВТОРНИК -->
+                        <tr>
+                            <td class="day-cell"><span>Вт</span></td>
+                            <td><span class="pair-time">1 (09:00–10:35)</span></td>
+                            <td>
+                                <span class="subject">Производство рекламного продукта</span>
+                                <span class="teacher">Доманов М.В.</span>
+                            </td>
+                            <td><span class="room">16</span></td>
+                        </tr>
+                        <tr>
+                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
+                            <td><span class="pair-time">2 (10:45–12:20)</span></td>
+                            <td>
+                                <span class="subject">Русский язык и культура речи</span>
+                                <span class="teacher">Сыромолот Е.Н.</span>
+                            </td>
+                            <td><span class="room">18</span></td>
+                        </tr>
+                        <tr>
+                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
+                            <td><span class="pair-time">3 (12:40–14:15)</span></td>
+                            <td>
+                                <span class="subject">Художественное проектирование рекламного продукта</span>
+                                <span class="teacher">Черноусенко М.В.</span>
+                            </td>
+                            <td><span class="room">15</span></td>
+                        </tr>
+
+                        <!-- СРЕДА -->
+                        <tr>
+                            <td class="day-cell"><span>Ср</span></td>
+                            <td><span class="pair-time">1 (09:00–10:35)</span></td>
+                            <td>
+                                <span class="subject">Иностранный язык в профессиональной деятельности</span>
+                                <span class="teacher">Гуца С.К. / Глинская И.В.</span>
+                            </td>
+                            <td><span class="room">3/20</span></td>
+                        </tr>
+                        <tr>
+                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
+                            <td><span class="pair-time">2 (10:45–12:20)</span></td>
+                            <td>
+                                <span class="subject">Разработка и реализация творческой концепции рекламного продукта</span>
+                                <span class="teacher">Доманов М.В.</span>
+                            </td>
+                            <td><span class="room">15</span></td>
+                        </tr>
+                        <tr>
+                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
+                            <td><span class="pair-time">3 (12:40–14:15)</span></td>
+                            <td>
+                                <span class="subject">Учебная практика ПМ.04</span>
+                                <span class="teacher">Доманов М.В.</span>
+                            </td>
+                            <td><span class="room">19</span></td>
+                        </tr>
+
+                        <!-- ЧЕТВЕРГ -->
+                        <tr>
+                            <td class="day-cell"><span>Чт</span></td>
+                            <td><span class="pair-time">4 (14:30–16:05)</span></td>
+                            <td>
+                                <span class="subject">Организация и проведение рекламных и коммуникационных кампаний</span>
+                                <span class="teacher">Демченко Е.В.</span>
+                            </td>
+                            <td><span class="room">9</span></td>
+                        </tr>
+                        <tr>
+                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
+                            <td><span class="pair-time">5 (16:10–17:45)</span></td>
+                            <td>
+                                <span class="subject">Медиапланирование и медиабайт</span>
+                                <span class="teacher">Гречанова А.В.</span>
+                            </td>
+                            <td><span class="room">5a</span></td>
+                        </tr>
+
+                        <!-- ПЯТНИЦА -->
+                        <tr>
+                            <td class="day-cell"><span>Пт</span></td>
+                            <td><span class="pair-time">1 (09:00–10:35)</span></td>
+                            <td>
+                                <span class="subject">Организация и проведение рекламных и коммуникационных кампаний</span>
+                                <span class="teacher">Демченко Е.В.</span>
+                            </td>
+                            <td><span class="room">9</span></td>
+                        </tr>
+                        <tr>
+                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
+                            <td><span class="pair-time">2 (10:45–12:20)</span></td>
+                            <td>
+                                <span class="subject">Медиапланирование и медиабайт</span>
+                                <span class="teacher">Гречанова А.В.</span>
+                            </td>
+                            <td><span class="room">5a</span></td>
+                        </tr>
+                        <tr>
+                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
+                            <td><span class="pair-time">3 (12:40–14:15)</span></td>
+                            <td>
+                                <span class="subject">Физическая культура</span>
+                                <span class="teacher">Ятрушева О.В.</span>
+                            </td>
+                            <td><span class="room">ф/з</span></td>
+                        </tr>
                     </tbody>
                 </table>
-            `;
+            </div>
 
-            scheduleContent.innerHTML = html;
-        }
-
-        // === ЗАГРУЗКА ИЗ ФАЙЛА ===
-        function loadFromFile(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.schedule && Array.isArray(data.schedule)) {
-                        currentData = data;
-                        renderSchedule(data);
-                        fileName = file.name;
-                        fileNameEl.textContent = fileName;
-                    } else {
-                        alert('❌ Неверный формат: ожидается поле "schedule" (массив)');
-                    }
-                } catch (err) {
-                    alert('❌ Ошибка парсинга JSON: ' + err.message);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // === СОБЫТИЯ ===
-        fileInput.addEventListener('change', function(e) {
-            if (this.files && this.files.length > 0) {
-                fileNameEl.textContent = this.files[0].name;
-            } else {
-                fileNameEl.textContent = 'файл не выбран';
-            }
-        });
-
-        loadBtn.addEventListener('click', function() {
-            if (fileInput.files && fileInput.files.length > 0) {
-                loadFromFile(fileInput.files[0]);
-            } else {
-                alert('📂 Пожалуйста, выберите файл');
-            }
-        });
-
-        clearBtn.addEventListener('click', function() {
-            currentData = null;
-            fileInput.value = '';
-            fileNameEl.textContent = 'файл не выбран';
-            scheduleCard.classList.remove('visible');
-            scheduleContent.innerHTML = `
-                <div class="empty-state">
-                    <div class="big-icon">📭</div>
-                    <p>Расписание не загружено</p>
+            <!-- ГАЛЕРЕЯ ДОПОЛНИТЕЛЬНЫХ ФОТО -->
+            <div style="margin-top:0.5rem;">
+                <div style="font-size:0.8rem;color:#712f4b;font-weight:500;margin-bottom:0.5rem;">📸 Дополнительные фото</div>
+                <div class="scroll-container">
+                    <div id="imageGrid" class="image-grid"></div>
                 </div>
-            `;
-        });
+            </div>
 
-        // === ПРИМЕР ФАЙЛА ===
-        exampleBtn.addEventListener('click', function() {
-            const json = JSON.stringify(defaultSchedule, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'example_schedule.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
+            <div class="footer-actions">
+                <button class="btn btn-success" id="exportImagesBtn">💾 Сохранить как PDF</button>
+                <button class="btn btn-danger" id="clearImagesBtn">🗑️ Удалить фото</button>
+            </div>
+        </div>
+    </div>
 
-        // === ЭКСПОРТ ===
-        exportBtn.addEventListener('click', function() {
-            if (!currentData) {
-                alert('📭 Нет данных для экспорта');
+    <script>
+        // ===== СОСТОЯНИЕ =====
+        let uploadedFiles = [];
+        let imageUrls = [];
+
+        // ===== DOM ЭЛЕМЕНТЫ =====
+        const fileListEl = document.getElementById('fileList');
+        const imageGridEl = document.getElementById('imageGrid');
+        const imageCountEl = document.getElementById('imageCount');
+        const loadBtn = document.getElementById('loadImagesBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const clearImagesBtn = document.getElementById('clearImagesBtn');
+        const exportBtn = document.getElementById('exportImagesBtn');
+
+        // ===== ОБНОВЛЕНИЕ UI =====
+        function updateUI() {
+            // Список файлов
+            if (uploadedFiles.length === 0) {
+                fileListEl.innerHTML = `<div style="font-size:0.7rem;color:#95486b;opacity:0.5;text-align:center;padding:0.3rem;">Файлы не выбраны</div>`;
+            } else {
+                fileListEl.innerHTML = uploadedFiles.map((file, index) => `
+                    <div class="file-item">
+                        <span class="name">📎 ${file.name}</span>
+                        <span class="size">${(file.size / 1024).toFixed(0)} KB</span>
+                        <button class="remove-btn" data-index="${index}">✕</button>
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('.file-item .remove-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const index = parseInt(this.dataset.index);
+                        removeFile(index);
+                    });
+                });
+            }
+
+            // Галерея
+            if (imageUrls.length === 0) {
+                imageGridEl.innerHTML = `
+                    <div class="no-images">
+                        <span class="icon">🖼️</span>
+                        <p>Загрузите фото расписания</p>
+                        <p style="font-size:0.65rem;opacity:0.6;">Сфотографируйте или выберите из галереи</p>
+                    </div>
+                `;
+                imageCountEl.textContent = '0 фото';
+            } else {
+                imageGridEl.innerHTML = imageUrls.map((url, index) => `
+                    <div class="image-wrapper">
+                        <img src="${url}" alt="Страница ${index + 1}" loading="lazy">
+                        <button class="remove-img" data-index="${index}">✕</button>
+                        <span class="page-number">${index + 1}</span>
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('.image-wrapper .remove-img').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const index = parseInt(this.dataset.index);
+                        removeImage(index);
+                    });
+                });
+
+                imageCountEl.textContent = `${imageUrls.length} фото`;
+            }
+
+            loadBtn.disabled = uploadedFiles.length === 0;
+        }
+
+        // ===== ДОБАВЛЕНИЕ ФАЙЛОВ =====
+        function addFiles(files) {
+            const validFiles = Array.from(files).filter(f => 
+                f.type.startsWith('image/') && 
+                ['image/png', 'image/jpeg', 'image/webp'].includes(f.type)
+            );
+
+            if (validFiles.length === 0) {
+                alert('📷 Пожалуйста, выберите изображения в формате PNG, JPG или WEBP');
                 return;
             }
-            const json = JSON.stringify(currentData, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'schedule_export.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
 
-        // === ЗАГРУЗКА ПО УМОЛЧАНИЮ ===
-        // Автоматически загружаем демо-расписание при открытии
-        window.addEventListener('DOMContentLoaded', function() {
-            currentData = defaultSchedule;
-            renderSchedule(defaultSchedule);
-            fileNameEl.textContent = 'demo_schedule.json (загружен автоматически)';
-        });
-    </script>
-</body>
-</html>
+            uploadedFiles.push(...validFiles);
+            updateUI();
+        }
+
+        // ===== УДАЛЕНИЕ ФАЙЛА =====
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            updateUI();
+        }
+
+        // ===== УДАЛЕНИЕ ИЗОБРАЖЕНИЯ =====
+        function removeImage(index) {
+            URL.revokeObjectURL(imageUrls[index]);
+            imageUrls.splice(index, 1);
+            updateUI();
+        }
+
+        // ===== ЗАГРУЗКА ИЗОБРАЖЕНИЙ =====
+        function loadImages() {
+            if (uploadedFiles.length === 0) return;
+
+            imageUrls.forEach(url => URL.revokeObjectURL(url));
+            imageUrls = [];
+
+            uploadedFiles.forEach(file => {
+                const url = URL.createObjectURL(file);
+                imageUrls.push(url);
+            });
+
+            uploadedFiles = [];
+            updateUI();
+        }
+
+        // ===== ОЧИСТКА ВСЕГО =====
+        function clearAll() {
+            uploadedFiles = [];
+            imageUrls.forEach(url => URL.revokeObjectURL(url));
+            imageUrls = [];
+            updateUI();
+        }
+
+        // ===== ЭКС
