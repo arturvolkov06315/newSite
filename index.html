@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Расписание — OCR загрузка</title>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+    <!-- PaddleOCR.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@paddlejs-models/ocr@1.1.0/dist/index.min.js">
     </script>
     <style>
         * {
@@ -482,6 +483,18 @@
             min-width: 80px;
         }
 
+        .loading-message {
+            display: none;
+            text-align: center;
+            padding: 0.5rem;
+            color: #95486b;
+            font-size: 0.8rem;
+        }
+
+        .loading-message.active {
+            display: block;
+        }
+
         @media (min-width: 600px) {
             .upload-buttons {
                 grid-template-columns: 1fr 1fr 1fr;
@@ -622,6 +635,10 @@
                 <img id="previewImage" src="" alt="Предпросмотр">
             </div>
 
+            <div class="loading-message" id="loadingMessage">
+                ⏳ Загрузка модели PaddleOCR... (первый раз может занять 10-20 секунд)
+            </div>
+
             <div class="progress-container" id="progressContainer">
                 <div class="progress-bar">
                     <div class="fill" id="progressFill"></div>
@@ -683,7 +700,7 @@
             { day: 'Пн', time: '3 (12:40–14:15)', subject: 'Фотограф', teacher: 'Радюк Л.А.', room: 'ф/л' },
             { day: 'Пн', time: '4 (14:30–16:05)', subject: 'Учебная практика ПМ.05', teacher: 'Радюк Л.А.', room: 'ф/л' },
             { day: 'Вт', time: '1 (09:00–10:35)', subject: 'Производство рекламного продукта', teacher: 'Доманов М.В.',
-            room: '16' },
+                room: '16' },
             { day: 'Вт', time: '2 (10:45–12:20)', subject: 'Русский язык и культура речи', teacher: 'Сыромолот Е.Н.',
                 room: '18' },
             { day: 'Вт', time: '3 (12:40–14:15)', subject: 'Художественное проектирование рекламного продукта',
@@ -708,6 +725,8 @@
         let currentImageFile = null;
         let currentImageUrl = null;
         let isProcessing = false;
+        let ocr = null;
+        let isModelLoading = false;
 
         // ===== DOM ЭЛЕМЕНТЫ =====
         const fileInputs = document.querySelectorAll('.upload-btn input[type="file"]');
@@ -725,6 +744,7 @@
         const statusMessage = document.getElementById('statusMessage');
         const recognizedText = document.getElementById('recognizedText');
         const textContent = document.getElementById('textContent');
+        const loadingMessage = document.getElementById('loadingMessage');
 
         // ===== ОТРИСОВКА ТАБЛИЦЫ =====
         function renderSchedule(data) {
@@ -742,9 +762,8 @@
 
             let html = '';
             let currentDay = '';
-            let isFirst = true;
 
-            data.forEach((row, index) => {
+            data.forEach((row) => {
                 const showDay = row.day !== currentDay;
                 currentDay = row.day;
 
@@ -779,6 +798,63 @@
         function updateProgress(percent, text) {
             progressFill.style.width = percent + '%';
             progressText.textContent = text;
+        }
+
+        // ===== ЗАГРУЗКА МОДЕЛИ PADDLEOCR =====
+        async function loadPaddleOCR() {
+            if (ocr) return ocr;
+            if (isModelLoading) {
+                await new Promise(resolve => {
+                    const check = setInterval(() => {
+                        if (ocr || !isModelLoading) {
+                            clearInterval(check);
+                            resolve();
+                        }
+                    }, 200);
+                });
+                return ocr;
+            }
+
+            isModelLoading = true;
+            loadingMessage.classList.add('active');
+            showStatus('⏳ Загрузка модели PaddleOCR... (до 20 сек)', 'info');
+
+            try {
+                // Используем PaddleOCR через CDN
+                // Проверяем, загрузилась ли библиотека
+                if (typeof window.PaddleOCR === 'undefined') {
+                    // Ждём загрузки
+                    await new Promise((resolve) => {
+                        const check = setInterval(() => {
+                            if (typeof window.PaddleOCR !== 'undefined') {
+                                clearInterval(check);
+                                resolve();
+                            }
+                        }, 100);
+                    });
+                }
+
+                // Инициализируем OCR
+                const result = await window.PaddleOCR.init({
+                    lang: 'ru', // русский язык
+                    useGPU: false // используем CPU для совместимости
+                });
+
+                ocr = result;
+                loadingMessage.classList.remove('active');
+                hideStatus();
+                showStatus('✅ Модель загружена!', 'success');
+                setTimeout(hideStatus, 2000);
+                return ocr;
+
+            } catch (error) {
+                console.error('Ошибка загрузки модели:', error);
+                loadingMessage.classList.remove('active');
+                showStatus('❌ Ошибка загрузки модели: ' + error.message, 'error');
+                return null;
+            } finally {
+                isModelLoading = false;
+            }
         }
 
         // ===== ПАРСИНГ РАСПИСАНИЯ ИЗ ТЕКСТА =====
@@ -820,7 +896,6 @@
                 }
 
                 if (foundDay) {
-                    // Сохраняем накопленные строки как одну запись
                     if (buffer.length > 0 && currentDay) {
                         const parsed = parseScheduleLine(buffer.join(' '), currentDay);
                         if (parsed) result.push(parsed);
@@ -833,7 +908,6 @@
                 // Пытаемся распарсить строку с номером пары и временем
                 const timeMatch = line.match(/(\d+)\s*\((\d{2}:\d{2})[–-](\d{2}:\d{2})\)/);
                 if (timeMatch) {
-                    // Сохраняем предыдущий буфер
                     if (buffer.length > 0 && currentDay) {
                         const parsed = parseScheduleLine(buffer.join(' '), currentDay);
                         if (parsed) result.push(parsed);
@@ -853,11 +927,9 @@
                     continue;
                 }
 
-                // Добавляем строку в буфер
                 buffer.push(line);
             }
 
-            // Обрабатываем последний буфер
             if (buffer.length > 0 && currentDay) {
                 const parsed = parseScheduleLine(buffer.join(' '), currentDay);
                 if (parsed) result.push(parsed);
@@ -867,10 +939,8 @@
         }
 
         function parseScheduleLine(line, day) {
-            // Ищем время в формате "1 (09:00-10:35)" или "2 (10:45–12:20)"
             let timeMatch = line.match(/(\d+)\s*\((\d{2}:\d{2})[–-](\d{2}:\d{2})\)/);
             if (!timeMatch) {
-                // Пробуем другой формат: "1. 09:00-10:35"
                 timeMatch = line.match(/(\d+)[.)]\s*(\d{2}:\d{2})[–-](\d{2}:\d{2})/);
                 if (timeMatch) {
                     return {
@@ -881,7 +951,6 @@
                         room: '—'
                     };
                 }
-                // Если нет времени, пропускаем
                 return null;
             }
 
@@ -890,10 +959,8 @@
             const timeEnd = timeMatch[3];
             const timeStr = `${pairNum} (${timeStart}–${timeEnd})`;
 
-            // Убираем время из строки
             let rest = line.replace(timeMatch[0], '').trim();
 
-            // Ищем аудиторию (цифры или буквы с цифрами, или ф/л, ф/з)
             let roomMatch = rest.match(/\b(ф\/[лз]|\d+[a-zA-Z]?|[a-zA-Z]\/\d+)\b/);
             let room = '—';
             let subjectTeacher = rest;
@@ -903,18 +970,15 @@
                 subjectTeacher = rest.replace(roomMatch[0], '').trim();
             }
 
-            // Пытаемся разделить на предмет и преподавателя
             let subject = subjectTeacher;
             let teacher = '—';
 
-            // Ищем ФИО с инициалами
             const teacherMatch = subjectTeacher.match(/\s*([А-ЯЁ][а-яё]+\s+[А-ЯЁ]\.\s*[А-ЯЁ]\.?)/);
             if (teacherMatch) {
                 teacher = teacherMatch[1].trim();
                 subject = subjectTeacher.replace(teacherMatch[0], '').trim();
             }
 
-            // Убираем лишние разделители
             subject = subject.replace(/^[–—\-:;,\s]+/, '');
 
             return {
@@ -938,30 +1002,46 @@
             updateProgress(0, 'Подготовка...');
 
             try {
-                const imageUrl = URL.createObjectURL(currentImageFile);
+                // Загружаем модель
+                const ocrInstance = await loadPaddleOCR();
+                if (!ocrInstance) {
+                    showStatus('❌ Не удалось загрузить модель OCR', 'error');
+                    isProcessing = false;
+                    recognizeBtn.disabled = false;
+                    progressContainer.classList.remove('active');
+                    return;
+                }
 
-                // Показываем предпросмотр
+                const imageUrl = URL.createObjectURL(currentImageFile);
                 previewImage.src = imageUrl;
                 previewContainer.classList.add('active');
 
-                // Распознаём текст
-                const result = await Tesseract.recognize(imageUrl, 'rus', {
-                    logger: (m) => {
-                        if (m.status === 'recognizing text') {
-                            const progress = Math.round(m.progress * 100);
-                            updateProgress(progress, `Распознавание: ${progress}%`);
-                        }
-                    }
-                });
+                updateProgress(30, 'Распознавание...');
 
-                const text = result.data.text;
-                textContent.textContent = text;
+                // Конвертируем File в base64 для PaddleOCR
+                const base64 = await fileToBase64(currentImageFile);
+                const result = await ocrInstance.recognize(base64);
+
+                updateProgress(90, 'Обработка результата...');
+
+                // Извлекаем текст из результата
+                let fullText = '';
+                if (result && result.text) {
+                    fullText = result.text;
+                } else if (result && result.results) {
+                    fullText = result.results.map(item => item.text).join('\n');
+                } else if (typeof result === 'string') {
+                    fullText = result;
+                } else {
+                    fullText = JSON.stringify(result);
+                }
+
+                textContent.textContent = fullText;
                 recognizedText.classList.add('active');
 
                 updateProgress(100, 'Готово!');
 
-                // Парсим расписание
-                const parsed = parseScheduleFromText(text);
+                const parsed = parseScheduleFromText(fullText);
 
                 if (parsed.length === 0) {
                     showStatus('⚠️ Не удалось распознать расписание. Попробуйте другое фото или проверьте качество.', 'error');
@@ -972,7 +1052,7 @@
                 }
 
             } catch (error) {
-                console.error(error);
+                console.error('Ошибка распознавания:', error);
                 showStatus('❌ Ошибка распознавания: ' + error.message, 'error');
             } finally {
                 isProcessing = false;
@@ -981,6 +1061,16 @@
                     progressContainer.classList.remove('active');
                 }, 2000);
             }
+        }
+
+        // ===== КОНВЕРТАЦИЯ FILE В BASE64 =====
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
         }
 
         // ===== ОБРАБОТКА ФАЙЛА =====
@@ -993,7 +1083,6 @@
             currentImageFile = file;
             currentImageUrl = URL.createObjectURL(file);
 
-            // Показываем превью
             previewImage.src = currentImageUrl;
             previewContainer.classList.add('active');
 
@@ -1039,7 +1128,6 @@
 
         // ===== СОБЫТИЯ =====
 
-        // Выбор файла
         fileInputs.forEach(input => {
             input.addEventListener('change', function(e) {
                 if (this.files && this.files.length > 0) {
@@ -1049,13 +1137,10 @@
             });
         });
 
-        // Распознать
         recognizeBtn.addEventListener('click', recognizeSchedule);
 
-        // Очистить
         clearBtn.addEventListener('click', clearAll);
 
-        // Сброс на демо
         resetBtn.addEventListener('click', function() {
             currentSchedule = [...demoData];
             renderSchedule(currentSchedule);
@@ -1064,11 +1149,17 @@
             setTimeout(hideStatus, 3000);
         });
 
-        // Экспорт JSON
         exportBtn.addEventListener('click', exportJSON);
 
         // ===== ИНИЦИАЛИЗАЦИЯ =====
         renderSchedule(demoData);
+
+        // Предзагрузка модели
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                loadPaddleOCR();
+            }, 2000);
+        });
     </script>
 </body>
 </html>
