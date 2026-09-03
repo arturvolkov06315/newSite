@@ -27,7 +27,6 @@
             width: 100%;
         }
 
-        /* ===== КАРТОЧКА ЗАГРУЗКИ ===== */
         .upload-card {
             background: #fcf5f8;
             border-radius: 32px;
@@ -64,7 +63,6 @@
             white-space: nowrap;
         }
 
-        /* ===== КНОПКИ ЗАГРУЗКИ ===== */
         .upload-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -84,7 +82,6 @@
             padding: 1rem 0.5rem;
             cursor: pointer;
             transition: all 0.2s;
-            text-decoration: none;
             color: #712f4b;
             font-size: 0.8rem;
             font-weight: 500;
@@ -124,20 +121,11 @@
             border-color: #ffb0c8;
         }
 
-        .upload-btn.camera:active {
-            background: #ffc8d8;
-        }
-
         .upload-btn.gallery {
             background: #fce4ed;
             border-color: #ffc0d0;
         }
 
-        .upload-btn.gallery:active {
-            background: #ffd5e0;
-        }
-
-        /* ===== ФАЙЛЫ В ОЧЕРЕДИ ===== */
         .file-list {
             display: flex;
             flex-direction: column;
@@ -191,7 +179,6 @@
             opacity: 1;
         }
 
-        /* ===== КНОПКИ ДЕЙСТВИЙ ===== */
         .actions-row {
             display: flex;
             gap: 0.6rem;
@@ -256,7 +243,6 @@
             pointer-events: none;
         }
 
-        /* ===== КАРТОЧКА РАСПИСАНИЯ ===== */
         .schedule-card {
             background: #fcf5f8;
             border-radius: 32px;
@@ -301,7 +287,6 @@
             border: 1px solid #ffb3cb;
         }
 
-        /* ===== ТАБЛИЦА (ДЕМО) ===== */
         .table-wrap {
             overflow-x: auto;
             border-radius: 24px;
@@ -429,7 +414,6 @@
             min-width: 1.8rem;
         }
 
-        /* ===== ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ ===== */
         .image-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -505,7 +489,6 @@
             margin-bottom: 0.2rem;
         }
 
-        /* ===== FOOTER ===== */
         .footer-actions {
             margin-top: 1rem;
             display: flex;
@@ -518,197 +501,10 @@
             min-width: 80px;
         }
 
-        /* ===== АДАПТИВ ===== */
-
-        @media (min-width: 600px) {
-            .upload-buttons {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-
-            .image-grid {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-
-            .upload-header h2 {
-                font-size: 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 0.4rem;
-            }
-
-            .upload-card,
-            .schedule-card {
-                padding: 0.8rem 0.6rem;
-                border-radius: 24px;
-            }
-
-            .upload-header h2 {
-                font-size: 1rem;
-            }
-
-            .upload-buttons {
-                grid-template-columns: 1fr 1fr;
-                gap: 0.4rem;
-            }
-
-            .upload-btn {
-                min-height: 64px;
-                padding: 0.6rem 0.3rem;
-                border-radius: 18px;
-            }
-
-            .upload-btn .icon {
-                font-size: 1.4rem;
-            }
-
-            .upload-btn .label {
-                font-size: 0.6rem;
-            }
-
-            .btn {
-                font-size: 0.7rem;
-                padding: 0.5rem 0.6rem;
-                min-height: 38px;
-                border-radius: 30px;
-            }
-
-            .image-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 0.4rem;
-            }
-
-            .image-grid .image-wrapper {
-                border-radius: 12px;
-                aspect-ratio: 3/4;
-            }
-
-            .image-grid .image-wrapper .remove-img {
-                width: 24px;
-                height: 24px;
-                font-size: 0.7rem;
-            }
-
-            .schedule-header h1 {
-                font-size: 1.1rem;
-            }
-
-            .schedule-header .group-name {
-                font-size: 0.6rem;
-                padding: 0.1rem 0.6rem;
-            }
-
-            .schedule-header .count-badge {
-                font-size: 0.55rem;
-                padding: 0.1rem 0.5rem;
-            }
-
-            .file-item {
-                font-size: 0.65rem;
-                padding: 0.3rem 0.6rem;
-                border-radius: 12px;
-            }
-
-            table {
-                font-size: 0.65rem;
-                min-width: 380px;
-            }
-
-            th {
-                font-size: 0.55rem;
-                padding: 0.4rem 0.25rem;
-            }
-
-            td {
-                font-size: 0.6rem;
-                padding: 0.35rem 0.2rem;
-            }
-
-            .subject {
-                font-size: 0.65rem;
-            }
-
-            .teacher {
-                font-size: 0.55rem;
-            }
-
-            .room {
-                font-size: 0.55rem;
-                padding: 0.05rem 0.4rem;
-                min-width: 1.4rem;
-            }
-
-            .pair-time {
-                font-size: 0.5rem;
-                padding: 0.05rem 0.4rem;
-            }
-
-            .day-cell {
-                font-size: 0.65rem;
-            }
-
-            .day-cell span {
-                font-size: 0.6rem;
-                padding: 0.05rem 0.5rem;
-            }
-
-            .no-images {
-                font-size: 0.7rem;
-                padding: 1rem 0.3rem;
-            }
-
-            .no-images .icon {
-                font-size: 1.8rem;
-            }
-
-            .footer-actions .btn {
-                font-size: 0.6rem;
-                padding: 0.4rem 0.5rem;
-                min-width: 60px;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .upload-buttons {
-                gap: 0.3rem;
-            }
-
-            .upload-btn {
-                min-height: 54px;
-                padding: 0.4rem 0.2rem;
-                border-radius: 14px;
-            }
-
-            .upload-btn .icon {
-                font-size: 1.2rem;
-            }
-
-            .upload-btn .label {
-                font-size: 0.5rem;
-            }
-
-            .image-grid {
-                gap: 0.3rem;
-            }
-
-            .image-grid .image-wrapper {
-                aspect-ratio: 2/3;
-            }
-
-            table {
-                font-size: 0.55rem;
-                min-width: 320px;
-            }
-
-            td {
-                padding: 0.25rem 0.15rem;
-            }
-
-            .subject {
-                font-size: 0.55rem;
-            }
+        .scroll-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         @keyframes fadeIn {
@@ -720,10 +516,136 @@
             animation: fadeIn 0.2s ease;
         }
 
-        .scroll-container {
-            max-height: 60vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+        @media (min-width: 600px) {
+            .upload-buttons {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            .image-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            .upload-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.4rem;
+            }
+            .upload-card,
+            .schedule-card {
+                padding: 0.8rem 0.6rem;
+                border-radius: 24px;
+            }
+            .upload-header h2 {
+                font-size: 1rem;
+            }
+            .upload-buttons {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.4rem;
+            }
+            .upload-btn {
+                min-height: 64px;
+                padding: 0.6rem 0.3rem;
+                border-radius: 18px;
+            }
+            .upload-btn .icon {
+                font-size: 1.4rem;
+            }
+            .upload-btn .label {
+                font-size: 0.6rem;
+            }
+            .btn {
+                font-size: 0.7rem;
+                padding: 0.5rem 0.6rem;
+                min-height: 38px;
+                border-radius: 30px;
+            }
+            .image-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.4rem;
+            }
+            .image-grid .image-wrapper {
+                border-radius: 12px;
+                aspect-ratio: 3/4;
+            }
+            .image-grid .image-wrapper .remove-img {
+                width: 24px;
+                height: 24px;
+                font-size: 0.7rem;
+            }
+            .schedule-header h1 {
+                font-size: 1.1rem;
+            }
+            .schedule-header .group-name {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.6rem;
+            }
+            .schedule-header .count-badge {
+                font-size: 0.55rem;
+                padding: 0.1rem 0.5rem;
+            }
+            table {
+                font-size: 0.65rem;
+                min-width: 380px;
+            }
+            th {
+                font-size: 0.55rem;
+                padding: 0.4rem 0.25rem;
+            }
+            td {
+                font-size: 0.6rem;
+                padding: 0.35rem 0.2rem;
+            }
+            .subject {
+                font-size: 0.65rem;
+            }
+            .teacher {
+                font-size: 0.55rem;
+            }
+            .room {
+                font-size: 0.55rem;
+                padding: 0.05rem 0.4rem;
+                min-width: 1.4rem;
+            }
+            .pair-time {
+                font-size: 0.5rem;
+                padding: 0.05rem 0.4rem;
+            }
+            .day-cell {
+                font-size: 0.65rem;
+            }
+            .day-cell span {
+                font-size: 0.6rem;
+                padding: 0.05rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .upload-btn {
+                min-height: 54px;
+                padding: 0.4rem 0.2rem;
+                border-radius: 14px;
+            }
+            .upload-btn .icon {
+                font-size: 1.2rem;
+            }
+            .upload-btn .label {
+                font-size: 0.5rem;
+            }
+            .image-grid .image-wrapper {
+                aspect-ratio: 2/3;
+            }
+            table {
+                font-size: 0.55rem;
+                min-width: 320px;
+            }
+            td {
+                padding: 0.25rem 0.15rem;
+            }
+            .subject {
+                font-size: 0.55rem;
+            }
         }
     </style>
 </head>
@@ -749,16 +671,18 @@
                 </label>
             </div>
 
-            <div class="file-list" id="fileList"></div>
+            <div class="file-list" id="fileList">
+                <div style="font-size:0.7rem;color:#95486b;opacity:0.5;text-align:center;padding:0.3rem;">Файлы не выбраны</div>
+            </div>
 
             <div class="actions-row">
-                <button class="btn btn-primary" id="loadImagesBtn">📥 Загрузить</button>
-                <button class="btn btn-danger" id="clearAllBtn">🗑️ Очистить</button>
+                <button class="btn btn-primary" id="loadImagesBtn">📥 Загрузить в галерею</button>
+                <button class="btn btn-danger" id="clearAllBtn">🗑️ Очистить всё</button>
             </div>
         </div>
 
         <!-- КАРТОЧКА РАСПИСАНИЯ -->
-        <div class="schedule-card" id="scheduleCard">
+        <div class="schedule-card">
             <div class="schedule-header">
                 <h1>расписание ✦</h1>
                 <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
@@ -767,162 +691,42 @@
                 </div>
             </div>
 
-            <!-- ДЕМО-ТАБЛИЦА (ВСЕ ПАРЫ) -->
+            <!-- ДЕМО-ТАБЛИЦА -->
             <div class="table-wrap">
                 <table>
                     <thead>
-                        <tr>
-                            <th>день</th>
-                            <th>время</th>
-                            <th>предмет / преподаватель</th>
-                            <th>ауд.</th>
-                        </tr>
+                        <tr><th>день</th><th>время</th><th>предмет / преподаватель</th><th>ауд.</th></tr>
                     </thead>
                     <tbody>
-                        <!-- ПОНЕДЕЛЬНИК -->
-                        <tr>
-                            <td class="day-cell"><span>Пн</span></td>
-                            <td><span class="pair-time">2 (10:45–12:20)</span></td>
-                            <td>
-                                <span class="subject">Учебная практика ПМ.02</span>
-                                <span class="teacher">Демченко Е.В.</span>
-                            </td>
-                            <td><span class="room">9</span></td>
-                        </tr>
-                        <tr>
-                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
-                            <td><span class="pair-time">3 (12:40–14:15)</span></td>
-                            <td>
-                                <span class="subject">Фотограф</span>
-                                <span class="teacher">Радюк Л.А.</span>
-                            </td>
-                            <td><span class="room">ф/л</span></td>
-                        </tr>
-                        <tr>
-                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
-                            <td><span class="pair-time">4 (14:30–16:05)</span></td>
-                            <td>
-                                <span class="subject">Учебная практика ПМ.05</span>
-                                <span class="teacher">Радюк Л.А.</span>
-                            </td>
-                            <td><span class="room">ф/л</span></td>
-                        </tr>
-
-                        <!-- ВТОРНИК -->
-                        <tr>
-                            <td class="day-cell"><span>Вт</span></td>
-                            <td><span class="pair-time">1 (09:00–10:35)</span></td>
-                            <td>
-                                <span class="subject">Производство рекламного продукта</span>
-                                <span class="teacher">Доманов М.В.</span>
-                            </td>
-                            <td><span class="room">16</span></td>
-                        </tr>
-                        <tr>
-                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
-                            <td><span class="pair-time">2 (10:45–12:20)</span></td>
-                            <td>
-                                <span class="subject">Русский язык и культура речи</span>
-                                <span class="teacher">Сыромолот Е.Н.</span>
-                            </td>
-                            <td><span class="room">18</span></td>
-                        </tr>
-                        <tr>
-                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
-                            <td><span class="pair-time">3 (12:40–14:15)</span></td>
-                            <td>
-                                <span class="subject">Художественное проектирование рекламного продукта</span>
-                                <span class="teacher">Черноусенко М.В.</span>
-                            </td>
-                            <td><span class="room">15</span></td>
-                        </tr>
-
-                        <!-- СРЕДА -->
-                        <tr>
-                            <td class="day-cell"><span>Ср</span></td>
-                            <td><span class="pair-time">1 (09:00–10:35)</span></td>
-                            <td>
-                                <span class="subject">Иностранный язык в профессиональной деятельности</span>
-                                <span class="teacher">Гуца С.К. / Глинская И.В.</span>
-                            </td>
-                            <td><span class="room">3/20</span></td>
-                        </tr>
-                        <tr>
-                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
-                            <td><span class="pair-time">2 (10:45–12:20)</span></td>
-                            <td>
-                                <span class="subject">Разработка и реализация творческой концепции рекламного продукта</span>
-                                <span class="teacher">Доманов М.В.</span>
-                            </td>
-                            <td><span class="room">15</span></td>
-                        </tr>
-                        <tr>
-                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
-                            <td><span class="pair-time">3 (12:40–14:15)</span></td>
-                            <td>
-                                <span class="subject">Учебная практика ПМ.04</span>
-                                <span class="teacher">Доманов М.В.</span>
-                            </td>
-                            <td><span class="room">19</span></td>
-                        </tr>
-
-                        <!-- ЧЕТВЕРГ -->
-                        <tr>
-                            <td class="day-cell"><span>Чт</span></td>
-                            <td><span class="pair-time">4 (14:30–16:05)</span></td>
-                            <td>
-                                <span class="subject">Организация и проведение рекламных и коммуникационных кампаний</span>
-                                <span class="teacher">Демченко Е.В.</span>
-                            </td>
-                            <td><span class="room">9</span></td>
-                        </tr>
-                        <tr>
-                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
-                            <td><span class="pair-time">5 (16:10–17:45)</span></td>
-                            <td>
-                                <span class="subject">Медиапланирование и медиабайт</span>
-                                <span class="teacher">Гречанова А.В.</span>
-                            </td>
-                            <td><span class="room">5a</span></td>
-                        </tr>
-
-                        <!-- ПЯТНИЦА -->
-                        <tr>
-                            <td class="day-cell"><span>Пт</span></td>
-                            <td><span class="pair-time">1 (09:00–10:35)</span></td>
-                            <td>
-                                <span class="subject">Организация и проведение рекламных и коммуникационных кампаний</span>
-                                <span class="teacher">Демченко Е.В.</span>
-                            </td>
-                            <td><span class="room">9</span></td>
-                        </tr>
-                        <tr>
-                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
-                            <td><span class="pair-time">2 (10:45–12:20)</span></td>
-                            <td>
-                                <span class="subject">Медиапланирование и медиабайт</span>
-                                <span class="teacher">Гречанова А.В.</span>
-                            </td>
-                            <td><span class="room">5a</span></td>
-                        </tr>
-                        <tr>
-                            <td class="day-cell" style="background:transparent !important; border-radius:0;"></td>
-                            <td><span class="pair-time">3 (12:40–14:15)</span></td>
-                            <td>
-                                <span class="subject">Физическая культура</span>
-                                <span class="teacher">Ятрушева О.В.</span>
-                            </td>
-                            <td><span class="room">ф/з</span></td>
-                        </tr>
+                        <tr><td class="day-cell"><span>Пн</span></td><td><span class="pair-time">2 (10:45–12:20)</span></td><td><span class="subject">Учебная практика ПМ.02</span><span class="teacher">Демченко Е.В.</span></td><td><span class="room">9</span></td></tr>
+                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">3 (12:40–14:15)</span></td><td><span class="subject">Фотограф</span><span class="teacher">Радюк Л.А.</span></td><td><span class="room">ф/л</span></td></tr>
+                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">4 (14:30–16:05)</span></td><td><span class="subject">Учебная практика ПМ.05</span><span class="teacher">Радюк Л.А.</span></td><td><span class="room">ф/л</span></td></tr>
+                        <tr><td class="day-cell"><span>Вт</span></td><td><span class="pair-time">1 (09:00–10:35)</span></td><td><span class="subject">Производство рекламного продукта</span><span class="teacher">Доманов М.В.</span></td><td><span class="room">16</span></td></tr>
+                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">2 (10:45–12:20)</span></td><td><span class="subject">Русский язык и культура речи</span><span class="teacher">Сыромолот Е.Н.</span></td><td><span class="room">18</span></td></tr>
+                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">3 (12:40–14:15)</span></td><td><span class="subject">Художественное проектирование рекламного продукта</span><span class="teacher">Черноусенко М.В.</span></td><td><span class="room">15</span></td></tr>
+                        <tr><td class="day-cell"><span>Ср</span></td><td><span class="pair-time">1 (09:00–10:35)</span></td><td><span class="subject">Иностранный язык в профессиональной деятельности</span><span class="teacher">Гуца С.К. / Глинская И.В.</span></td><td><span class="room">3/20</span></td></tr>
+                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">2 (10:45–12:20)</span></td><td><span class="subject">Разработка и реализация творческой концепции рекламного продукта</span><span class="teacher">Доманов М.В.</span></td><td><span class="room">15</span></td></tr>
+                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">3 (12:40–14:15)</span></td><td><span class="subject">Учебная практика ПМ.04</span><span class="teacher">Доманов М.В.</span></td><td><span class="room">19</span></td></tr>
+                        <tr><td class="day-cell"><span>Чт</span></td><td><span class="pair-time">4 (14:30–16:05)</span></td><td><span class="subject">Организация и проведение рекламных и коммуникационных кампаний</span><span class="teacher">Демченко Е.В.</span></td><td><span class="room">9</span></td></tr>
+                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">5 (16:10–17:45)</span></td><td><span class="subject">Медиапланирование и медиабайт</span><span class="teacher">Гречанова А.В.</span></td><td><span class="room">5a</span></td></tr>
+                        <tr><td class="day-cell"><span>Пт</span></td><td><span class="pair-time">1 (09:00–10:35)</span></td><td><span class="subject">Организация и проведение рекламных и коммуникационных кампаний</span><span class="teacher">Демченко Е.В.</span></td><td><span class="room">9</span></td></tr>
+                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">2 (10:45–12:20)</span></td><td><span class="subject">Медиапланирование и медиабайт</span><span class="teacher">Гречанова А.В.</span></td><td><span class="room">5a</span></td></tr>
+                        <tr><td class="day-cell" style="background:transparent !important;border-radius:0;"></td><td><span class="pair-time">3 (12:40–14:15)</span></td><td><span class="subject">Физическая культура</span><span class="teacher">Ятрушева О.В.</span></td><td><span class="room">ф/з</span></td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- ГАЛЕРЕЯ ДОПОЛНИТЕЛЬНЫХ ФОТО -->
+            <!-- ГАЛЕРЕЯ -->
             <div style="margin-top:0.5rem;">
                 <div style="font-size:0.8rem;color:#712f4b;font-weight:500;margin-bottom:0.5rem;">📸 Дополнительные фото</div>
                 <div class="scroll-container">
-                    <div id="imageGrid" class="image-grid"></div>
+                    <div id="imageGrid" class="image-grid">
+                        <div class="no-images">
+                            <span class="icon">🖼️</span>
+                            <p>Загрузите фото расписания</p>
+                            <p style="font-size:0.65rem;opacity:0.6;">Сфотографируйте или выберите из галереи</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -965,7 +769,8 @@
                     btn.addEventListener('click', function(e) {
                         e.stopPropagation();
                         const index = parseInt(this.dataset.index);
-                        removeFile(index);
+                        uploadedFiles.splice(index, 1);
+                        updateUI();
                     });
                 });
             }
@@ -983,7 +788,7 @@
             } else {
                 imageGridEl.innerHTML = imageUrls.map((url, index) => `
                     <div class="image-wrapper">
-                        <img src="${url}" alt="Страница ${index + 1}" loading="lazy">
+                        <img src="${url}" alt="Фото ${index + 1}" loading="lazy">
                         <button class="remove-img" data-index="${index}">✕</button>
                         <span class="page-number">${index + 1}</span>
                     </div>
@@ -993,7 +798,9 @@
                     btn.addEventListener('click', function(e) {
                         e.stopPropagation();
                         const index = parseInt(this.dataset.index);
-                        removeImage(index);
+                        URL.revokeObjectURL(imageUrls[index]);
+                        imageUrls.splice(index, 1);
+                        updateUI();
                     });
                 });
 
@@ -1019,25 +826,9 @@
             updateUI();
         }
 
-        // ===== УДАЛЕНИЕ ФАЙЛА =====
-        function removeFile(index) {
-            uploadedFiles.splice(index, 1);
-            updateUI();
-        }
-
-        // ===== УДАЛЕНИЕ ИЗОБРАЖЕНИЯ =====
-        function removeImage(index) {
-            URL.revokeObjectURL(imageUrls[index]);
-            imageUrls.splice(index, 1);
-            updateUI();
-        }
-
-        // ===== ЗАГРУЗКА ИЗОБРАЖЕНИЙ =====
+        // ===== ЗАГРУЗКА В ГАЛЕРЕЮ =====
         function loadImages() {
             if (uploadedFiles.length === 0) return;
-
-            imageUrls.forEach(url => URL.revokeObjectURL(url));
-            imageUrls = [];
 
             uploadedFiles.forEach(file => {
                 const url = URL.createObjectURL(file);
@@ -1056,4 +847,108 @@
             updateUI();
         }
 
-        // ===== ЭКС
+        // ===== ЭКСПОРТ В PDF =====
+        function exportAsPDF() {
+            if (imageUrls.length === 0) {
+                alert('📭 Нет изображений для экспорта');
+                return;
+            }
+
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            if (!printWindow) {
+                alert('⚠️ Разрешите всплывающие окна для печати');
+                return;
+            }
+
+            let html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Расписание 310Р15</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; background: white; text-align: center; }
+                        h1 { color: #8f4b6b; font-size: 24px; margin-bottom: 20px; }
+                        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1000px; margin: 0 auto; }
+                        .item { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: #fafafa; page-break-inside: avoid; }
+                        .item img { width: 100%; height: auto; display: block; }
+                        .item .label { padding: 8px; font-size: 12px; color: #666; background: #f5f5f5; }
+                        @media print { .item { page-break-inside: avoid; } }
+                    </style>
+                </head>
+                <body>
+                    <h1>📋 Расписание — группа 310Р15</h1>
+                    <div class="grid">
+            `;
+
+            imageUrls.forEach((url, index) => {
+                html += `
+                    <div class="item">
+                        <img src="${url}" alt="Страница ${index + 1}">
+                        <div class="label">Страница ${index + 1}</div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <p style="margin-top:30px;color:#999;font-size:12px;">Сгенерировано автоматически</p>
+                </body>
+                </html>
+            `;
+
+            printWindow.document.write(html);
+            printWindow.document.close();
+
+            setTimeout(() => {
+                printWindow.print();
+            }, 1000);
+        }
+
+        // ===== СОБЫТИЯ =====
+
+        // Выбор файлов
+        document.querySelectorAll('.upload-btn input[type="file"]').forEach(input => {
+            input.addEventListener('change', function(e) {
+                if (this.files && this.files.length > 0) {
+                    addFiles(this.files);
+                }
+                this.value = '';
+            });
+        });
+
+        // Загрузить в галерею
+        loadBtn.addEventListener('click', loadImages);
+
+        // Очистить всё
+        clearAllBtn.addEventListener('click', function() {
+            if (uploadedFiles.length === 0 && imageUrls.length === 0) {
+                alert('📭 Нет данных для очистки');
+                return;
+            }
+            if (confirm('🗑️ Удалить все файлы и изображения?')) {
+                clearAll();
+            }
+        });
+
+        // Удалить фото из галереи
+        clearImagesBtn.addEventListener('click', function() {
+            if (imageUrls.length === 0) {
+                alert('📭 Нет изображений для удаления');
+                return;
+            }
+            if (confirm('🗑️ Удалить все загруженные изображения?')) {
+                imageUrls.forEach(url => URL.revokeObjectURL(url));
+                imageUrls = [];
+                updateUI();
+            }
+        });
+
+        // Экспорт PDF
+        exportBtn.addEventListener('click', exportAsPDF);
+
+        // ===== ИНИЦИАЛИЗАЦИЯ =====
+        updateUI();
+    </script>
+</body>
+</html>
