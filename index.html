@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание — загрузка и просмотр</title>
+    <style>
+       * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(145deg, #ffe9f4 0%, #ffe0ed 100%);
+    font-family: 'Segoe UI', 'Quicksand', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.container {
+    max-width: 1100px;
+    width: 100%;
+}
+
+/* карточка загрузки */
+.upload-card {
+    background: rgba(255, 245, 248, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 60px 60px 50px 50px;
+    padding: 2rem 2.2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 20px 40px rgba(235, 120, 160, 0.2),
+                0 8px 20px rgba(255, 180, 200, 0.3),
+                inset 0 1px 4px rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 220, 235, 0.5);
+    transition: all 0.2s ease;
+}
+
+.upload-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 2px dashed #ffdce8;
+}
+
+.upload-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #8f4b6b;
+    text-shadow: 0 4px 10px rgba(255, 150, 200, 0.3);
+}
+
+.upload-header h2 span {
+    font-weight: 300;
+    opacity: 0.6;
+}
+
+.upload-header .hint-text {
+    font-size: 0.85rem;
+    color: #95486b;
+    background: #ffd9e6;
+    padding: 0.3rem 1.2rem;
+    border-radius: 40px;
+    border: 1px solid #ffb3cb;
+}
+
+.upload-area {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+.file-input-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+}
+
+.file-input-wrapper input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.file-input-wrapper .fake-input {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: #fff3f7;
+    border: 2px dashed #ffbdd2;
+    border-radius: 60px;
+    padding: 0.7rem 1.5rem;
+    color: #712f4b;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.file-input-wrapper .fake-input:hover {
+    background: #ffeef3;
+    border-color: #ffb0c8;
+}
+
+.file-input-wrapper .fake-input .icon {
+    font-size: 1.2rem;
+    opacity: 0.6;
+}
+
+.file-name {
+    font-size: 0.85rem;
+    color: #95486b;
+    padding: 0.3rem 0.8rem;
+    background: #fff3f7;
+    border-radius: 30px;
+    border: 1px solid #ffbdd2;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn {
+    background: #fbc4d0;
+    border: 1px solid #ffb3cb;
+    color: #582f41;
+    padding: 0.7rem 2rem;
+    border-radius: 60px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: inset 0 1px 0 #fff9fb;
+}
+
+.btn:hover {
+    background: #ffb8cf;
+    border-color: #ffb0c8;
+    transform: scale(1.02);
+}
+
+.btn-primary {
+    background: #ffbdd2;
+    border-color: #ffb0c8;
+    color: #582f41;
+}
+
+.btn-primary:hover {
+    background: #ffb0c8;
+    border-color: #ffa0bb;
+}
+
+.btn-danger {
+    background: #ffd9e6;
+    border-color: #ffbdd2;
+    color: #712f4b;
+}
+
+.btn-danger:hover {
+    background: #ffc8d8;
+    border-color: #ffb0c8;
+}
+
+.upload-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.hint {
+    font-size: 0.8rem;
+    color: #95486b;
+    margin-top: 0.8rem;
+    padding: 0.5rem 1rem;
+    background: #fff3f7;
+    border-radius: 30px;
+    border: 1px solid #ffdce8;
+}
+
+.hint code {
+    background: #ffd9e6;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.75rem;
+    color: #6d3a52;
+    border: 1px solid #ffbdd2;
+}
+
+.hint .btn-small {
+    padding: 0.2rem 0.8rem;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
+/* карточка расписания */
+.schedule-card {
+    background: rgba(255, 245, 248, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 60px 60px 50px 50px;
+    padding: 2rem 2.2rem;
+    box-shadow: 0 20px 40px rgba(235, 120, 160, 0.2),
+                0 8px 20px rgba(255, 180, 200, 0.3),
+                inset 0 1px 4px rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 220, 235, 0.5);
+    position: relative;
+    display: none;
+}
+
+.schedule-card.visible {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.schedule-card .deco-dots {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    display: flex;
+    gap: 6px;
+}
+
+.schedule-card .deco-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ffbdd2;
+    opacity: 0.4;
+}
+
+.schedule-card .deco-dots span:nth-child(2) {
+    opacity: 0.6;
+    width: 8px;
+    height: 8px;
+}
+
+/* заголовок расписания */
+.schedule-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 1.8rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px dashed #ffdce8;
+}
+
+.schedule-header h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #8f4b6b;
+    text-shadow: 0 4px 10px rgba(255, 150, 200, 0.3);
+    letter-spacing: 1px;
+}
+
+.schedule-header h1 .accent {
+    font-weight: 300;
+    color: #fbc4d0;
+}
+
+.schedule-header .group-name {
+    background: #ffd9e6;
+    color: #783f5b;
+    font-weight: 500;
+    padding: 0.25rem 1.6rem;
+    border-radius: 40px;
+    font-size: 0.9rem;
+    border: 1px solid #ffb3cb;
+    box-shadow: inset 0 0 0 1px #fff9fb;
+}
+
+/* таблица */
+.table-wrap {
+    overflow-x: auto;
+    border-radius: 40px;
+    background: rgba(255, 240, 245, 0.5);
+    padding: 0.1rem;
+    border: 1px solid rgba(255, 220, 235, 0.5);
+    box-shadow: inset 0 2px 8px rgba(255, 200, 220, 0.3);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    background: transparent;
+    min-width: 700px;
+}
+
+th {
+    background: #fbc4d0;
+    color: #582f41;
+    font-weight: 600;
+    padding: 1rem 0.6rem;
+    text-align: center;
+    border-bottom: 3px solid #ffb0c8;
+    font-size: 0.85rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+th:first-child {
+    border-radius: 30px 0 0 0;
+}
+th:last-child {
+    border-radius: 0 30px 0 0;
+}
+
+td {
+    background: rgba(255, 248, 250, 0.7);
+    backdrop-filter: blur(2px);
+    padding: 0.85rem 0.5rem;
+    text-align: center;
+    border-bottom: 1px solid #ffdce8;
+    vertical-align: middle;
+    color: #3e2a30;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+td:first-child {
+    font-weight: 500;
+    background: #fff3f7;
+    border-radius: 20px 0 0 20px;
+}
+
+td:last-child {
+    border-radius: 0 20px 20px 0;
+}
+
+tr:hover td {
+    background: #ffeef3;
+}
+
+tr:hover td:first-child {
+    background: #ffdde9;
+}
+
+/* день недели */
+.day-cell {
+    background: #ffdde9 !important;
+    font-weight: 600;
+    color: #712f4b;
+    border-radius: 20px 0 0 20px;
+    font-size: 0.9rem;
+}
+
+.day-cell span {
+    display: inline-block;
+    background: #ffffffb3;
+    padding: 0.15rem 1.2rem;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    border: 1px solid #ffbdd2;
+    backdrop-filter: blur(2px);
+}
+
+/* время */
+.pair-time {
+    font-weight: 500;
+    color: #56333f;
+    background: #fbdae6;
+    padding: 0.15rem 0.9rem;
+    border-radius: 30px;
+    font-size: 0.73rem;
+    display: inline-block;
+    border: 1px solid #ffb8cf;
+    white-space: nowrap;
+}
+
+/* предмет + преподаватель */
+.subject {
+    font-weight: 500;
+    color: #3c2430;
+    display: block;
+    margin-bottom: 0.05rem;
+    font-size: 0.93rem;
+}
+
+.teacher {
+    font-weight: 400;
+    color: #643e4e;
+    font-size: 0.82rem;
+}
+
+.teacher::before {
+    content: "— ";
+    opacity: 0.5;
+}
+
+/* аудитория */
+.room {
+    background: #ffeef5;
+    border-radius: 30px;
+    padding: 0.15rem 1rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #95486b;
+    display: inline-block;
+    border: 1px solid #ffbdd2;
+    min-width: 2.4rem;
+    box-shadow: 0 2px 4px rgba(255, 150, 180, 0.1);
+    transition: all 0.2s;
+}
+
+tr:hover .room {
+    background: #ffdde9;
+    border-color: #ffb0c8;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #95486b;
+}
+
+.empty-state .big-icon {
+    font-size: 3rem;
+    opacity: 0.3;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+}
+
+/* футер */
+.footer-actions {
+    margin-top: 1.8rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    border-top: 2px dashed #ffdce8;
+}
+
+/* анимация */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* адаптив */
+@media (max-width: 700px) {
+    .upload-card,
+    .schedule-card {
+        padding: 1.2rem 0.8rem;
+        border-radius: 40px;
+    }
+
+    .upload-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .upload-area {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .file-input-wrapper .fake-input {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    .schedule-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .schedule-header .group-name {
+        font-size: 0.75rem;
+        padding: 0.1rem 0.8rem;
+    }
+
+    .schedule-card .deco-dots {
+        display: none;
+    }
+
+    .upload-header .hint-text {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 1.4rem;
+        gap: 0.2rem;
+    }
+
+    td, th {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.68rem;
+    }
+
+    .subject {
+        font-size: 0.72rem;
+    }
+
+    .teacher {
+        font-size: 0.62rem;
+    }
+
+    .room {
+        font-size: 0.6rem;
+        padding: 0.05rem 0.6rem;
+        min-width: 1.6rem;
+    }
+
+    .pair-time {
+        font-size: 0.58rem;
+        padding: 0.05rem 0.5rem;
+    }
+
+    .day-cell span {
+        font-size: 0.68rem;
+        padding: 0.05rem 0.6rem;
+    }
+
+    .upload-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .file-name {
+        font-size: 0.7rem;
+        max-width: 150px;
+    }
+
+    .schedule-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .hint {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.8rem;
+    }
+
+    .hint code {
+        font-size: 0.65rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- карточка загрузки -->
+        <div class="upload-card">
+            <div class="upload-header">
+                <h2>📋 загрузить <span>расписание</span></h2>
+                <span style="font-size:0.85rem; color:#8a7564;">формат: JSON</span>
+            </div>
+
+            <div class="upload-area">
+                <div class="file-input-wrapper">
+                    <input type="file" id="fileInput" accept=".json">
+                    <div class="fake-input">
+                        <span class="icon">📂</span>
+                        <span>Выберите файл</span>
+                    </div>
+                </div>
+                <span class="file-name" id="fileName">файл не выбран</span>
+                <div class="upload-actions">
+                    <button class="btn btn-primary" id="loadBtn">Загрузить</button>
+                    <button class="btn btn-danger" id="clearBtn">Очистить</button>
+                </div>
+            </div>
+            <div class="hint">
+                <span>📌 Пример формата: </span>
+                <code>{"group":"310Р15","schedule":[{ "day":"Пн", "pairs":[{"time":"2 (10:45–12:20)","subject":"...","teacher":"...","room":"..."} ] }]}</code>
+                <button class="btn" id="exampleBtn" style="padding:0.2rem 0.8rem; font-size:0.75rem; margin-left:0.5rem;">📥 скачать пример</button>
+            </div>
+        </div>
+
+        <!-- карточка расписания -->
+        <div class="schedule-card" id="scheduleCard">
+            <div class="deco-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="schedule-header">
+                <h1>расписание <span class="accent">✦</span></h1>
+                <span class="group-name" id="groupName">310Р15</span>
+            </div>
+
+            <div class="table-wrap">
+                <div id="scheduleContent">
+                    <div class="empty-state">
+                        <div class="big-icon">📭</div>
+                        <p>Расписание не загружено</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-actions">
+                <button class="btn" id="exportBtn">📥 Экспортировать JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === ДАННЫЕ ПО УМОЛЧАНИЮ ===
+        const defaultSchedule = {
+            group: "310Р15",
+            schedule: [
+                {
+                    day: "Пн",
+                    pairs: [
+                        { time: "2 (10:45–12:20)", subject: "Учебная практика ПМ.02", teacher: "Демченко Е.В.", room: "9" },
+                        { time: "3 (12:40–14:15)", subject: "Фотограф", teacher: "Радюк Л.А.", room: "ф/л" },
+                        { time: "4 (14:30–16:05)", subject: "Учебная практика ПМ.05", teacher: "Радюк Л.А.", room: "ф/л" }
+                    ]
+                },
+                {
+                    day: "Вт",
+                    pairs: [
+                        { time: "1 (09:00–10:35)", subject: "Производство рекламного продукта", teacher: "Доманов М.В.", room: "16" },
+                        { time: "2 (10:45–12:20)", subject: "Русский язык и культура речи", teacher: "Сыромолот Е.Н.", room: "18" },
+                        { time: "3 (12:40–14:15)", subject: "Художественное проектирование рекламного продукта", teacher: "Черноусенко М.В.", room: "15" }
+                    ]
+                },
+                {
+                    day: "Ср",
+                    pairs: [
+                        { time: "1 (09:00–10:35)", subject: "Иностранный язык в профессиональной деятельности", teacher: "Гуца С.К. / Глинская И.В.", room: "3/20" },
+                        { time: "2 (10:45–12:20)", subject: "Разработка и реализация творческой концепции рекламного продукта", teacher: "Доманов М.В.", room: "15" },
+                        { time: "3 (12:40–14:15)", subject: "Учебная практика ПМ.04", teacher: "Доманов М.В.", room: "19" }
+                    ]
+                },
+                {
+                    day: "Чт",
+                    pairs: [
+                        { time: "4 (14:30–16:05)", subject: "Организация и проведение рекламных и коммуникационных кампаний", teacher: "Демченко Е.В.", room: "9" },
+                        { time: "5 (16:10–17:45)", subject: "Медиапланирование и медиабайт", teacher: "Гречанова А.В.", room: "5a" }
+                    ]
+                },
+                {
+                    day: "Пт",
+                    pairs: [
+                        { time: "1 (09:00–10:35)", subject: "Организация и проведение рекламных и коммуникационных кампаний", teacher: "Демченко Е.В.", room: "9" },
+                        { time: "2 (10:45–12:20)", subject: "Медиапланирование и медиабайт", teacher: "Гречанова А.В.", room: "5a" },
+                        { time: "3 (12:40–14:15)", subject: "Физическая культура", teacher: "Ятрушева О.В.", room: "ф/з" }
+                    ]
+                }
+            ]
+        };
+
+        let currentData = null;
+        let fileName = '';
+
+        // === ЭЛЕМЕНТЫ ===
+        const fileInput = document.getElementById('fileInput');
+        const fileNameEl = document.getElementById('fileName');
+        const loadBtn = document.getElementById('loadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const exampleBtn = document.getElementById('exampleBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const scheduleCard = document.getElementById('scheduleCard');
+        const scheduleContent = document.getElementById('scheduleContent');
+        const groupNameEl = document.getElementById('groupName');
+
+        // === ФУНКЦИЯ ОТРИСОВКИ ===
+        function renderSchedule(data) {
+            if (!data || !data.schedule || data.schedule.length === 0) {
+                scheduleContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="big-icon">📭</div>
+                        <p>Расписание не загружено</p>
+                    </div>
+                `;
+                scheduleCard.classList.remove('visible');
+                return;
+            }
+
+            scheduleCard.classList.add('visible');
+            groupNameEl.textContent = data.group || 'Группа';
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>день</th>
+                            <th>время</th>
+                            <th>предмет / преподаватель</th>
+                            <th>ауд.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.schedule.forEach((dayData, dayIndex) => {
+                const day = dayData.day;
+                const pairs = dayData.pairs || [];
+
+                pairs.forEach((pair, pairIndex) => {
+                    const isFirst = pairIndex === 0;
+                    html += `
+                        <tr>
+                            ${isFirst ? `<td class="day-cell"><span>${day}</span></td>` : `<td class="day-cell" style="background:transparent !important; border-radius:0;"></td>`}
+                            <td><span class="pair-time">${pair.time}</span></td>
+                            <td>
+                                <span class="subject">${pair.subject}</span>
+                                <span class="teacher">${pair.teacher}</span>
+                            </td>
+                            <td><span class="room">${pair.room}</span></td>
+                        </tr>
+                    `;
+                });
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            scheduleContent.innerHTML = html;
+        }
+
+        // === ЗАГРУЗКА ИЗ ФАЙЛА ===
+        function loadFromFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.schedule && Array.isArray(data.schedule)) {
+                        currentData = data;
+                        renderSchedule(data);
+                        fileName = file.name;
+                        fileNameEl.textContent = fileName;
+                    } else {
+                        alert('❌ Неверный формат: ожидается поле "schedule" (массив)');
+                    }
+                } catch (err) {
+                    alert('❌ Ошибка парсинга JSON: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // === СОБЫТИЯ ===
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files.length > 0) {
+                fileNameEl.textContent = this.files[0].name;
+            } else {
+                fileNameEl.textContent = 'файл не выбран';
+            }
+        });
+
+        loadBtn.addEventListener('click', function() {
+            if (fileInput.files && fileInput.files.length > 0) {
+                loadFromFile(fileInput.files[0]);
+            } else {
+                alert('📂 Пожалуйста, выберите файл');
+            }
+        });
+
+        clearBtn.addEventListener('click', function() {
+            currentData = null;
+            fileInput.value = '';
+            fileNameEl.textContent = 'файл не выбран';
+            scheduleCard.classList.remove('visible');
+            scheduleContent.innerHTML = `
+                <div class="empty-state">
+                    <div class="big-icon">📭</div>
+                    <p>Расписание не загружено</p>
+                </div>
+            `;
+        });
+
+        // === ПРИМЕР ФАЙЛА ===
+        exampleBtn.addEventListener('click', function() {
+            const json = JSON.stringify(defaultSchedule, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'example_schedule.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // === ЭКСПОРТ ===
+        exportBtn.addEventListener('click', function() {
+            if (!currentData) {
+                alert('📭 Нет данных для экспорта');
+                return;
+            }
+            const json = JSON.stringify(currentData, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'schedule_export.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // === ЗАГРУЗКА ПО УМОЛЧАНИЮ ===
+        // Автоматически загружаем демо-расписание при открытии
+        window.addEventListener('DOMContentLoaded', function() {
+            currentData = defaultSchedule;
+            renderSchedule(defaultSchedule);
+            fileNameEl.textContent = 'demo_schedule.json (загружен автоматически)';
+        });
+    </script>
+</body>
+</html>
